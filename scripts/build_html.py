@@ -11,6 +11,7 @@ import datetime
 import html
 import json
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -167,6 +168,28 @@ h2.sec:first-child{margin-top:0}
 .note-card h4{margin:0 0 6px;font-size:14px}
 .note-card p{margin:0;font-size:13.5px;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:12.5px;background:var(--card)}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 14px;line-height:1.6}
+.hint b{color:var(--ink);font-weight:600}
+.panel.tight{padding:6px 0;overflow-x:auto}
+table.rank{width:100%;border-collapse:collapse;font-size:13.5px}
+table.rank th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.rank td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.rank tr:last-child td{border-bottom:0}
+table.rank tbody tr:hover{background:var(--soft)}
+table.rank .c{text-align:center;color:var(--muted);font-variant-numeric:tabular-nums;width:44px}
+table.rank .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);width:62px}
+table.rank td.n{color:var(--ink)}
+table.rank .sk{font-weight:650}
+table.rank .cat{color:var(--muted);font-size:12.5px;white-space:nowrap}
+table.rank .w{width:150px}
+.mini{display:block;height:7px;border-radius:999px;background:var(--soft);overflow:hidden}
+.mini i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),color-mix(in srgb,var(--brand) 55%,#a855f7))}
+.verdict{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.v-must{color:var(--t0);border-color:var(--t0);font-weight:650}
+.v-high{color:var(--brand);border-color:var(--brand)}
+.v-mid{color:var(--muted)}
+.v-low,.v-plus{color:var(--t2);border-style:dashed}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 """
 
@@ -212,6 +235,82 @@ q.addEventListener('input',apply);
 goOnly.addEventListener('change',apply);
 apply();
 """
+
+
+SKILL_DEFS = [
+    ("Go", "语言", [r"\bgo\b", r"\bgolang\b"]),
+    ("Java", "语言", [r"\bjava\b", r"\bjvm\b"]),
+    ("C / C++", "语言", [r"\bc\+\+"]),
+    ("Python", "语言", [r"\bpython\b"]),
+    ("Node.js", "语言", [r"\bnode\.?js\b"]),
+    ("TypeScript", "语言", [r"\btypescript\b"]),
+    ("PHP", "语言", [r"\bphp\b"]),
+    ("Linux", "基础", [r"\blinux\b"]),
+    ("数据结构与算法", "基础", [r"数据结构"]),
+    ("系统 / 网络 / 协议", "基础", [r"网络协议", r"计算机体系结构", r"操作系统", r"\bgrpc\b", r"\bsse\b", r"系统、网络"]),
+    ("MySQL", "中间件", [r"\bmysql\b", r"\bsql\b"]),
+    ("Redis", "中间件", [r"\bredis\b"]),
+    ("消息队列", "中间件", [r"消息队列", r"\bmq\b", r"kafka", r"rocketmq"]),
+    ("高并发", "架构", [r"高并发"]),
+    ("分布式", "架构", [r"分布式"]),
+    ("服务治理", "架构", [r"限流", r"熔断", r"降级", r"服务治理"]),
+    ("可观测性 / 容灾", "架构", [r"可观测", r"\bslo\b", r"监控告警", r"容灾"]),
+    ("性能调优", "架构", [r"性能调优", r"性能优化", r"压测"]),
+    ("K8s / 云原生", "平台", [r"kubernetes", r"\bk8s\b", r"docker", r"云原生"]),
+    ("LLM / Agent 工程化", "新变量", [r"大模型", r"\bllm\b", r"\bagent\b", r"\brag\b", r"prompt", r"\bmcp\b"]),
+    ("AI 辅助研发", "新变量", [r"ai 辅助", r"ai 工具", r"与 ai 协作", r"ai 编程"]),
+    ("领域：电商 / 交易", "领域", [r"电商", r"外卖", r"零售", r"团购", r"交易系统"]),
+    ("领域：营销", "领域", [r"营销"]),
+    ("领域：游戏服务端", "领域", [r"游戏服务端", r"游戏", r"\bmmo\b"]),
+    ("领域：内容 / 社区", "领域", [r"内容安全", r"社区", r"短视频"]),
+    ("领域：数据 / 数仓", "领域", [r"数仓", r"数据仓库", r"\bolap\b", r"大数据"]),
+    ("领域：金融 / 支付", "领域", [r"支付", r"清结算", r"金融"]),
+]
+
+# 出现这些措辞说明是「多语言任选一」，语言类不计入硬性
+PARALLEL = re.compile(r"至少一种|至少一门|任一|之中至少|包括但不限于|任选")
+
+
+def _hit(patterns, text):
+    text = (text or "").lower()
+    return [p_ for p_ in patterns if re.search(p_, text)]
+
+
+def extract_skills(job):
+    """返回 {技能: 'must' | 'plus'}。语言类若处于「多语言任选」语境，降级为 plus。"""
+    must_text = " ".join(job.get("must") or [])
+    plus_text = " ".join(job.get("plus") or [])
+    duty_text = " ".join(job.get("duties") or [])
+    parallel = bool(PARALLEL.search(must_text))
+
+    found = {}
+    for name, cat, pats in SKILL_DEFS:
+        in_must = bool(_hit(pats, must_text))
+        in_duty = bool(_hit(pats, duty_text))
+        in_plus = bool(_hit(pats, plus_text))
+        if not (in_must or in_duty or in_plus):
+            continue
+        if in_must or in_duty:
+            found[name] = "plus" if (cat == "语言" and parallel) else "must"
+        else:
+            found[name] = "plus"
+    return found
+
+
+def skill_ranking(jobs):
+    """按出现广度排序：先总出现数，再硬性数。"""
+    stats = {}
+    for name, cat, _ in SKILL_DEFS:
+        stats[name] = {"name": name, "cat": cat, "must": 0, "plus": 0, "jobs": []}
+    for job in jobs:
+        for name, kind in extract_skills(job).items():
+            stats[name][kind] += 1
+            stats[name]["jobs"].append(job.get("company"))
+    rows = list(stats.values())
+    for r in rows:
+        r["total"] = r["must"] + r["plus"]
+    rows.sort(key=lambda r: (r["total"], r["must"]), reverse=True)
+    return [r for r in rows if r["total"] > 0]
 
 
 def esc(value):
@@ -374,7 +473,7 @@ def main():
     # tabs
     page.append('<nav class="tabs"><div class="wrap"><div class="tabbar">')
     page.append('<button class="active" data-tab="list">① 职位列表</button>')
-    page.append('<button data-tab="req">② 岗位要求提炼</button>')
+    page.append('<button data-tab="req">② 技能要求</button>')
     page.append("</div></div></nav><main>")
 
     # module 1
@@ -399,15 +498,39 @@ def main():
             page.append(job_card(idx, job))
     page.append("</div></section>")
 
-    # module 2
-    page.append('<section id="tab-req" hidden><div class="wrap">')
+    # module 2 —— 技能要求
+    rank = skill_ranking(actionable)
+    total_jobs = len(actionable)
+    by_name = {r["name"]: r for r in rank}
 
-    page.append('<h2 class="sec">硬性要求出现频次（%d 个可投岗位样本）</h2>' % len(actionable))
-    page.append('<div class="panel"><div class="bars">')
-    for name, n in sig.most_common():
-        width = round(n / max_sig * 100)
-        page.append('<div class="bar"><span class="lbl">%s</span><span class="track"><span class="fill" style="width:%d%%"></span></span><span class="v">%d</span></div>' % (esc(name), width, n))
-    page.append("</div></div>")
+    page.append('<section id="tab-req" hidden><div class="wrap">')
+    page.append('<h2 class="sec">技能要求排行榜 · 按 %d 个可投岗位的 JD 统计</h2>' % total_jobs)
+    page.append('<p class="hint">统计口径：技能出现在岗位「硬性要求」或「岗位职责」中记为<b>硬性</b>；仅出现在「加分项」中记为<b>加分</b>。同一岗位重复出现只计一次，按总出现数从高到低排序。</p>')
+    page.append('<div class="panel tight"><table class="rank"><thead><tr>'
+                '<th class="c">#</th><th>技能</th><th>类别</th>'
+                '<th class="n">硬性</th><th class="n">加分</th><th class="n">覆盖</th>'
+                '<th class="w">强度</th><th>判定</th></tr></thead><tbody>')
+    for i, r in enumerate(rank, 1):
+        ratio = r["total"] / total_jobs
+        if ratio >= 0.75:
+            verdict, vcls = "必备项", "v-must"
+        elif ratio >= 0.5:
+            verdict, vcls = "高频项", "v-high"
+        elif ratio >= 0.25:
+            verdict, vcls = "常见项", "v-mid"
+        elif r["must"] > 0:
+            verdict, vcls = "稀缺项", "v-low"
+        else:
+            verdict, vcls = "纯加分", "v-plus"
+        page.append(
+            '<tr><td class="c">%d</td><td class="sk">%s</td><td class="cat">%s</td>'
+            '<td class="n">%d</td><td class="n">%d</td><td class="n">%d/%d</td>'
+            '<td class="w"><span class="mini"><i style="width:%d%%"></i></span></td>'
+            '<td><span class="verdict %s">%s</span></td></tr>'
+            % (i, esc(r["name"]), esc(r["cat"]), r["must"], r["plus"], r["total"], total_jobs,
+               round(ratio * 100), vcls, verdict)
+        )
+    page.append("</tbody></table></div>")
 
     page.append('<h2 class="sec">能力分层地图</h2>')
     layers = [
@@ -422,21 +545,21 @@ def main():
         page.append('<div class="layer"><span class="k">%s</span><span class="v">%s</span></div>' % (esc(k), esc(v)))
     page.append("</div></div>")
 
+    go_r = by_name.get("Go", {"total": 0, "must": 0})
+    k8s_r = by_name.get("K8s / 云原生", {"total": 0, "must": 0})
+    llm_r = by_name.get("LLM / Agent 工程化", {"total": 0, "must": 0})
     page.append('<h2 class="sec">三条判断</h2>')
     notes = [
-        ("Go 不是门槛，是被当作加分", "12 个可投岗位里 9 个明写 Go；但真正卡人的是「有没有一个 3 年以上的深度领域」，栈可以换，领域换不了。"),
-        ("最大缺口是 K8s 与 LLM 工程化", "K8s 只在 3 个岗位出现，但其中 2 个是主投；LLM 工程化出现 5 次，是 2026 年新增的通用加分项。"),
-        ("3-5 年带是甜点区，5 年+ 是陷阱", "4 年投 5 年+ 岗会被压职级；投 2 年+ 岗会被判 overqualified。3 年+ / 3-5 年 才是最优区间。"),
+        ("Go 是底座，不是门槛",
+         "Go 在 %d/%d 个岗位出现，其中 %d 个是硬性 —— 说明它已是基本盘。真正卡人的是领域深度，栈可以换，领域换不了。" % (go_r["total"], total_jobs, go_r["must"])),
+        ("K8s 命中率低，但压在关键岗上",
+         "K8s / 云原生只出现在 %d 个岗位（硬性 %d），覆盖率低；但其中包含主投第一顺位的腾讯 TIONE，属于『出现少、权重高』的稀缺项。" % (k8s_r["total"], k8s_r["must"])),
+        ("LLM 工程化是 2026 年的新增变量",
+         "LLM / Agent 相关要求出现在 %d 个岗位，是今年才普遍进 JD 的一项，也是把 4 年 Go 与其他人拉开差距的最短路径。" % llm_r["total"]),
     ]
     page.append('<div class="notes">')
-    for h, p in notes:
-        page.append('<div class="note-card"><h4>%s</h4><p>%s</p></div>' % (esc(h), esc(p)))
-    page.append("</div>")
-
-    page.append('<h2 class="sec">逐岗位要求提炼</h2>')
-    page.append('<div class="grid2">')
-    for job in actionable:
-        page.append(refine_card(job))
+    for h, p_ in notes:
+        page.append('<div class="note-card"><h4>%s</h4><p>%s</p></div>' % (esc(h), esc(p_)))
     page.append("</div>")
 
     page.append("</div></section></main>")
