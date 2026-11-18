@@ -185,6 +185,7 @@ table.rank .cat{color:var(--muted);font-size:12.5px;white-space:nowrap}
 table.rank .w{width:150px}
 .mini{display:block;height:7px;border-radius:999px;background:var(--soft);overflow:hidden}
 .mini i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),color-mix(in srgb,var(--brand) 55%,#a855f7))}
+table.rank td.dom{color:var(--muted);font-size:12.5px;line-height:1.5}
 .verdict{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
 .v-must{color:var(--t0);border-color:var(--t0);font-weight:650}
 .v-high{color:var(--brand);border-color:var(--brand)}
@@ -504,33 +505,61 @@ def main():
     by_name = {r["name"]: r for r in rank}
 
     page.append('<section id="tab-req" hidden><div class="wrap">')
-    page.append('<h2 class="sec">技能要求排行榜 · 按 %d 个可投岗位的 JD 统计</h2>' % total_jobs)
-    page.append('<p class="hint">统计口径：技能出现在岗位「硬性要求」或「岗位职责」中记为<b>硬性</b>；仅出现在「加分项」中记为<b>加分</b>。同一岗位重复出现只计一次，按总出现数从高到低排序。</p>')
-    page.append('<div class="panel tight"><table class="rank"><thead><tr>'
-                '<th class="c">#</th><th>技能</th><th>类别</th>'
+    tech = [r for r in rank if r["cat"] != "领域"]
+    domain = [r for r in rank if r["cat"] == "领域"]
+
+    def rank_table(rows, show_jobs=False, first_col="技能", strip_prefix=""):
+        head = ('<div class="panel tight"><table class="rank"><thead><tr>'
+                '<th class="c">#</th><th>' + first_col + '</th><th>类别</th>'
                 '<th class="n">硬性</th><th class="n">加分</th><th class="n">覆盖</th>'
-                '<th class="w">强度</th><th>判定</th></tr></thead><tbody>')
-    for i, r in enumerate(rank, 1):
-        ratio = r["total"] / total_jobs
-        if ratio >= 0.75:
-            verdict, vcls = "必备项", "v-must"
-        elif ratio >= 0.5:
-            verdict, vcls = "高频项", "v-high"
-        elif ratio >= 0.25:
-            verdict, vcls = "常见项", "v-mid"
-        elif r["must"] > 0:
-            verdict, vcls = "稀缺项", "v-low"
-        else:
-            verdict, vcls = "纯加分", "v-plus"
-        page.append(
-            '<tr><td class="c">%d</td><td class="sk">%s</td><td class="cat">%s</td>'
-            '<td class="n">%d</td><td class="n">%d</td><td class="n">%d/%d</td>'
-            '<td class="w"><span class="mini"><i style="width:%d%%"></i></span></td>'
-            '<td><span class="verdict %s">%s</span></td></tr>'
-            % (i, esc(r["name"]), esc(r["cat"]), r["must"], r["plus"], r["total"], total_jobs,
-               round(ratio * 100), vcls, verdict)
-        )
-    page.append("</tbody></table></div>")
+                '<th class="w">强度</th><th>判定</th>')
+        out = [head]
+        if show_jobs:
+            out.append('<th>涉及岗位</th>')
+        out.append("</tr></thead><tbody>")
+        for i, r in enumerate(rows, 1):
+            ratio = r["total"] / total_jobs
+            if ratio >= 0.75:
+                verdict, vcls = "必备项", "v-must"
+            elif ratio >= 0.5:
+                verdict, vcls = "高频项", "v-high"
+            elif ratio >= 0.25:
+                verdict, vcls = "常见项", "v-mid"
+            elif r["must"] > 0:
+                verdict, vcls = "稀缺项", "v-low"
+            else:
+                verdict, vcls = "纯加分", "v-plus"
+            out.append(
+                '<tr><td class="c">%d</td><td class="sk">%s</td><td class="cat">%s</td>'
+                '<td class="n">%d</td><td class="n">%d</td><td class="n">%d/%d</td>'
+                '<td class="w"><span class="mini"><i style="width:%d%%"></i></span></td>'
+                '<td><span class="verdict %s">%s</span></td>'
+                % (i, esc(r["name"].replace(strip_prefix, "")), esc(r["cat"]), r["must"], r["plus"], r["total"], total_jobs,
+                   round(ratio * 100), vcls, verdict)
+            )
+            if show_jobs:
+                from collections import Counter as _C
+                cnt = _C(r["jobs"])
+                names = [c if n == 1 else "%s×%d" % (c, n) for c, n in cnt.items()]
+                shown = "、".join(names[:4]) + ("…" if len(names) > 4 else "")
+                out.append('<td class="dom">%s</td>' % esc(shown))
+            out.append("</tr>")
+        out.append("</tbody></table></div>")
+        return "".join(out)
+
+    page.append('<h2 class="sec">技能要求排行榜 · 技术技能（%d 个可投岗位）</h2>' % total_jobs)
+    page.append('<p class="hint">统计口径：技能出现在岗位「硬性要求」或「岗位职责」中记为<b>硬性</b>；仅出现在「加分项」中记为<b>加分</b>。'
+                '同一岗位重复出现只计一次。多语言并列表述（如『Go/Java/Python 至少一种』）按<b>加分</b>计，避免把可选项算成必备。</p>')
+    page.append(rank_table(tech))
+
+    dom_jobs = set()
+    for r in domain:
+        dom_jobs.update(r["jobs"])
+    page.append('<h2 class="sec">领域经验分布</h2>')
+    page.append('<p class="hint">领域偏好单独统计：它在 JD 里多以「优先」「加分」表述，命中率天然低于技术技能；'
+                '但对 4 年经验的社招，领域是否对口往往是简历第一道筛子（<b>推断</b>，非 JD 明示）。'
+                '本池 %d/%d 个岗位写明了领域偏好。</p>' % (len(dom_jobs), total_jobs))
+    page.append(rank_table(domain, show_jobs=True, first_col="领域", strip_prefix="领域："))
 
     page.append('<h2 class="sec">能力分层地图</h2>')
     layers = [
@@ -548,7 +577,7 @@ def main():
     go_r = by_name.get("Go", {"total": 0, "must": 0})
     k8s_r = by_name.get("K8s / 云原生", {"total": 0, "must": 0})
     llm_r = by_name.get("LLM / Agent 工程化", {"total": 0, "must": 0})
-    page.append('<h2 class="sec">三条判断</h2>')
+    page.append('<h2 class="sec">四条判断</h2>')
     notes = [
         ("Go 是底座，不是门槛",
          "Go 在 %d/%d 个岗位出现，其中 %d 个是硬性 —— 说明它已是基本盘。真正卡人的是领域深度，栈可以换，领域换不了。" % (go_r["total"], total_jobs, go_r["must"])),
@@ -556,6 +585,9 @@ def main():
          "K8s / 云原生只出现在 %d 个岗位（硬性 %d），覆盖率低；但其中包含主投第一顺位的腾讯 TIONE，属于『出现少、权重高』的稀缺项。" % (k8s_r["total"], k8s_r["must"])),
         ("LLM 工程化是 2026 年的新增变量",
          "LLM / Agent 相关要求出现在 %d 个岗位，是今年才普遍进 JD 的一项，也是把 4 年 Go 与其他人拉开差距的最短路径。" % llm_r["total"]),
+        ("领域经验命中率最低，但决定性最强",
+         "领域偏好只在 %d/%d 个岗位中被明写，且多为「优先」。但从技术技能榜看，各岗位的硬性要求高度同质（Go + 高并发 + MySQL + MQ）；"
+         "真正能区分候选人的，恰恰是领域 —— 这也是为什么它值得单列一榜。" % (len(dom_jobs), total_jobs)),
     ]
     page.append('<div class="notes">')
     for h, p_ in notes:

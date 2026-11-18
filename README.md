@@ -449,4 +449,4 @@ python3 scripts/render.py   # 改完 data/*.json 后重渲染 README
 
 ---
 
-<sub>最后生成：2026-11-19 00:23</sub>
+<sub>最后生成：2026-11-19 00:29</sub>
