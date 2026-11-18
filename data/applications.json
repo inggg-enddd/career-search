@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "stages": ["待投", "已投", "简历过", "一面", "二面", "HR面", "已挂", "Offer", "放弃"],
+    "note": "stage 只允许上面 9 个值；applied_at / last_update 用 YYYY-MM-DD"
+  },
+  "applications": [
+    {
+      "id": "app-001",
+      "job_id": "tencent-tione",
+      "priority": 1,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "补 K8s + GPU 调度案例，再投",
+      "notes": "天花板最高，留给准备最充分的那一周"
+    },
+    {
+      "id": "app-002",
+      "job_id": "bytedance-douyin-ecom",
+      "priority": 2,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "整理高并发交易/电商相关项目证据",
+      "notes": "明写欢迎转 Go，是最佳入口"
+    },
+    {
+      "id": "app-003",
+      "job_id": "bilibili-backend",
+      "priority": 3,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "确认是否接受纯 Go 背景（岗位 Node 为主）",
+      "notes": "年限完美命中，通过率最高"
+    },
+    {
+      "id": "app-004",
+      "job_id": "bytedance-it-platform",
+      "priority": 4,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "确认统招本科条件；点明自己深耕的领域",
+      "notes": "统招本科是硬卡"
+    },
+    {
+      "id": "app-005",
+      "job_id": "bytedance-intl-ecom",
+      "priority": 5,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "评估英语面试能力",
+      "notes": "国际化业务，英语是隐性门槛"
+    },
+    {
+      "id": "app-006",
+      "job_id": "meituan-agent",
+      "priority": 6,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "先找 HR 确认是否收 Go 背景",
+      "notes": "语言待确认，确认后再决定是否投"
+    }
+  ]
+}
