@@ -186,6 +186,11 @@ table.rank .w{width:150px}
 .mini{display:block;height:7px;border-radius:999px;background:var(--soft);overflow:hidden}
 .mini i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),color-mix(in srgb,var(--brand) 55%,#a855f7))}
 table.rank td.dom{color:var(--muted);font-size:12.5px;line-height:1.5}
+.lvl{display:inline-block;min-width:38px;text-align:center;font-size:11.5px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);font-weight:600}
+.lv3{color:#fff;background:var(--t0);border-color:var(--t0)}
+.lv2{color:var(--ink);background:var(--soft)}
+.lv1{color:var(--t1);border-color:var(--t1)}
+.lv0{color:var(--t3);border-color:var(--t3);border-style:dashed}
 .verdict{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
 .v-must{color:var(--t0);border-color:var(--t0);font-weight:650}
 .v-high{color:var(--brand);border-color:var(--brand)}
@@ -318,6 +323,20 @@ def esc(value):
     return html.escape(str(value if value is not None else ""))
 
 
+LV_LABEL = {3: "强", 2: "够用", 1: "薄弱", 0: "无"}
+
+
+def lookup_level(levels, name):
+    if not levels:
+        return 2, ""
+    item = levels.get(name)
+    if isinstance(item, dict):
+        return item.get("level", 2), item.get("note", "")
+    if isinstance(item, int):
+        return item, ""
+    return 2, ""
+
+
 def load(name):
     with open(DATA / name, encoding="utf-8") as fh:
         return json.load(fh)
@@ -432,6 +451,8 @@ def refine_card(job):
 def main():
     jobs_doc = load("jobs.json")
     apps_doc = load("applications.json")
+    profile = load("profile.json")
+    levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
     jobs = jobs_doc.get("jobs", [])
     apps = apps_doc.get("applications", [])
@@ -465,6 +486,9 @@ def main():
     page.append('<span class="chip">城市 <b>%s</b></span>' % esc(meta.get("city")))
     page.append('<span class="chip">可投 <b>%d</b> 个</span>' % len(actionable))
     page.append('<span class="chip">已排除 <b>%d</b> 个</span>' % len(grouped["排除"]))
+    page.append('<span class="chip">基线 <b>%s</b></span>' % esc(profile.get("headline", "")))
+    for t in profile.get("tags", []):
+        page.append('<span class="chip">%s</span>' % esc(t))
     page.append("</div>")
     page.append('<div class="stats">')
     for t in TIERS:
@@ -508,11 +532,11 @@ def main():
     tech = [r for r in rank if r["cat"] != "领域"]
     domain = [r for r in rank if r["cat"] == "领域"]
 
-    def rank_table(rows, show_jobs=False, first_col="技能", strip_prefix=""):
+    def rank_table(rows, show_jobs=False, first_col="技能", strip_prefix="", levels=None):
         head = ('<div class="panel tight"><table class="rank"><thead><tr>'
                 '<th class="c">#</th><th>' + first_col + '</th><th>类别</th>'
                 '<th class="n">硬性</th><th class="n">加分</th><th class="n">覆盖</th>'
-                '<th class="w">强度</th><th>判定</th>')
+                '<th class="w">强度</th><th>判定</th><th>你的状态</th>')
         out = [head]
         if show_jobs:
             out.append('<th>涉及岗位</th>')
@@ -537,6 +561,8 @@ def main():
                 % (i, esc(r["name"].replace(strip_prefix, "")), esc(r["cat"]), r["must"], r["plus"], r["total"], total_jobs,
                    round(ratio * 100), vcls, verdict)
             )
+            lv, lnote = lookup_level(levels, r["name"])
+            out.append('<td><span class="lvl lv%d" title="%s">%s</span></td>' % (lv, esc(lnote), LV_LABEL[lv]))
             if show_jobs:
                 from collections import Counter as _C
                 cnt = _C(r["jobs"])
@@ -548,9 +574,10 @@ def main():
         return "".join(out)
 
     page.append('<h2 class="sec">技能要求排行榜 · 技术技能（%d 个可投岗位）</h2>' % total_jobs)
+    page.append('<p class="hint">你的基线：<b>%s</b> —— %s。最后一列是「你的状态」，可以直接对照差距。<br>' % (esc(profile.get("headline", "")), esc(profile.get("note", "").rstrip("。"))))
     page.append('<p class="hint">统计口径：技能出现在岗位「硬性要求」或「岗位职责」中记为<b>硬性</b>；仅出现在「加分项」中记为<b>加分</b>。'
                 '同一岗位重复出现只计一次。多语言并列表述（如『Go/Java/Python 至少一种』）按<b>加分</b>计，避免把可选项算成必备。</p>')
-    page.append(rank_table(tech))
+    page.append(rank_table(tech, levels=levels))
 
     dom_jobs = set()
     for r in domain:
@@ -559,7 +586,7 @@ def main():
     page.append('<p class="hint">领域偏好单独统计：它在 JD 里多以「优先」「加分」表述，命中率天然低于技术技能；'
                 '但对 4 年经验的社招，领域是否对口往往是简历第一道筛子（<b>推断</b>，非 JD 明示）。'
                 '本池 %d/%d 个岗位写明了领域偏好。</p>' % (len(dom_jobs), total_jobs))
-    page.append(rank_table(domain, show_jobs=True, first_col="领域", strip_prefix="领域："))
+    page.append(rank_table(domain, show_jobs=True, first_col="领域", strip_prefix="领域：", levels=levels))
 
     page.append('<h2 class="sec">能力分层地图</h2>')
     layers = [
