@@ -191,7 +191,7 @@ def main():
         % (meta.get("verified_at", "—"), meta.get("city", "—"))
     )
     lines.append("")
-    lines.append("首页（可交互）：[`index.html`](index.html) — 本地打开，或 clone 后双击")
+    lines.append("**在线首页：https://inggg-enddd.github.io/career-search/**")
     lines.append("")
     lines.append("## 概览")
     lines.append("")

@@ -4,7 +4,7 @@
 >
 > 数据核验：2026-11-18 · 城市：上海 · 本文件由 `scripts/render.py` 生成，请勿手改
 
-首页（可交互）：[`index.html`](index.html) — 本地打开，或 clone 后双击
+**在线首页：https://inggg-enddd.github.io/career-search/**
 
 ## 概览
 
@@ -444,4 +444,4 @@ python3 scripts/render.py   # 改完 data/*.json 后重渲染 README
 
 ---
 
-<sub>最后生成：2026-11-18 19:22</sub>
+<sub>最后生成：2026-11-19 00:13</sub>
