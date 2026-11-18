@@ -104,6 +104,14 @@ def detail_section(jobs):
         out.append(" · ".join(meta) if meta else "")
         out.append("")
 
+        duties = job.get("duties") or []
+        if duties:
+            out.append("**岗位职责**")
+            out.append("")
+            for item in duties:
+                out.append("- %s" % item)
+            out.append("")
+
         must = job.get("must") or []
         if must:
             out.append("**硬性要求**")
@@ -118,6 +126,10 @@ def detail_section(jobs):
             out.append("")
             for item in plus:
                 out.append("- %s" % item)
+            out.append("")
+
+        if job.get("gap"):
+            out.append("**你的差距**：%s" % job["gap"])
             out.append("")
 
         if job.get("note"):
@@ -178,6 +190,8 @@ def main():
         "> 数据核验：%s · 城市：%s · 本文件由 `scripts/render.py` 生成，请勿手改"
         % (meta.get("verified_at", "—"), meta.get("city", "—"))
     )
+    lines.append("")
+    lines.append("首页（可交互）：[`index.html`](index.html) — 本地打开，或 clone 后双击")
     lines.append("")
     lines.append("## 概览")
     lines.append("")

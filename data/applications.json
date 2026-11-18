@@ -1,6 +1,16 @@
 {
   "meta": {
-    "stages": ["待投", "已投", "简历过", "一面", "二面", "HR面", "已挂", "Offer", "放弃"],
+    "stages": [
+      "待投",
+      "已投",
+      "简历过",
+      "一面",
+      "二面",
+      "HR面",
+      "已挂",
+      "Offer",
+      "放弃"
+    ],
     "note": "stage 只允许上面 9 个值；applied_at / last_update 用 YYYY-MM-DD"
   },
   "applications": [
@@ -56,13 +66,23 @@
     },
     {
       "id": "app-006",
-      "job_id": "meituan-agent",
+      "job_id": "meituan-agent-base",
       "priority": 6,
       "stage": "待投",
       "applied_at": null,
       "last_update": "2026-11-18",
-      "next_step": "先找 HR 确认是否收 Go 背景",
-      "notes": "语言待确认，确认后再决定是否投"
+      "next_step": "补 Agent/MCP 相关认知再投",
+      "notes": "Go 明确可投，迁移成本最低的 Agent 岗"
+    },
+    {
+      "id": "app-007",
+      "job_id": "meituan-agent-dev",
+      "priority": 7,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-18",
+      "next_step": "准备 RAG/Function Call 案例",
+      "notes": "薪资明码 25-50k·15薪；JD 来自第三方，末段截断"
     }
   ]
 }
