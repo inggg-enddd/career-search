@@ -12,6 +12,7 @@ import html
 import json
 import pathlib
 import re
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -196,23 +197,45 @@ table.rank td.dom{color:var(--muted);font-size:12.5px;line-height:1.5}
 .v-high{color:var(--brand);border-color:var(--brand)}
 .v-mid{color:var(--muted)}
 .v-low,.v-plus{color:var(--t2);border-style:dashed}
+.cappool{display:flex;flex-wrap:wrap;gap:8px}
+.cap{font-size:13px;padding:6px 12px;border-radius:8px;background:var(--soft);border:1px solid var(--line);font-weight:550}
+.projs{display:grid;gap:14px}
+.proj{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.proj-head{display:flex;align-items:baseline;gap:10px}
+.proj-idx{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600}
+.proj h3{margin:0;font-size:16.5px;letter-spacing:-.01em}
+.proj .tags{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 4px}
+.tag.tech{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 40%,transparent)}
+.pblock{margin-top:12px}
+.pblock .lbl,.bullet .lbl{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px}
+.pblock p{margin:0;font-size:14px;line-height:1.65}
+.pblock ol{margin:0;padding-left:20px;font-size:14px;line-height:1.65}
+.pblock ol li{margin:2px 0}
+.pblock p.res{color:var(--t0);font-weight:550}
+.bullet{margin-top:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:8px;position:relative}
+.bullet p{margin:0;font-size:13.5px;line-height:1.7;padding-right:60px}
+.bullet .copy{position:absolute;right:10px;top:10px;font-size:12px;padding:3px 10px;border-radius:6px;
+  border:1px solid var(--line);background:var(--card);color:var(--brand);cursor:pointer}
+.bullet .copy:hover{border-color:var(--brand)}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 """
 
 JS = """
 const tabs=[...document.querySelectorAll('.tabbar button')];
 const secs={list:document.getElementById('tab-list'),req:document.getElementById('tab-req')};
+const _rs=document.getElementById('tab-resume'); if(_rs) secs.resume=_rs;
 function showTab(name,scroll){
   const b=tabs.find(x=>x.dataset.tab===name)||tabs[0];
   tabs.forEach(x=>x.classList.toggle('active',x===b));
-  Object.entries(secs).forEach(([k,el])=>el.hidden=(k!==b.dataset.tab));
+  Object.entries(secs).forEach(([k,el])=>{ if(el) el.hidden=(k!==b.dataset.tab); });
   if(scroll) window.scrollTo({top:0,behavior:'instant'});
 }
 tabs.forEach(b=>b.addEventListener('click',()=>{
   showTab(b.dataset.tab,true);
   history.replaceState(null,'','#'+b.dataset.tab);
 }));
-showTab((location.hash||'').replace('#','')==='req'?'req':'list',false);
+const H=((location.hash||'').replace('#',''));
+showTab(['list','req','resume'].includes(H)?H:'list',false);
 
 const q=document.getElementById('q');
 const goOnly=document.getElementById('goOnly');
@@ -240,6 +263,13 @@ fbtns.forEach(b=>b.addEventListener('click',()=>{
 q.addEventListener('input',apply);
 goOnly.addEventListener('change',apply);
 apply();
+
+document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.text||'';
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{
+    b.textContent='已复制';setTimeout(()=>b.textContent='复制',1500);
+  }).catch(()=>{b.textContent='复制失败';setTimeout(()=>b.textContent='复制',1500);});
+}));
 """
 
 
@@ -452,6 +482,8 @@ def main():
     jobs_doc = load("jobs.json")
     apps_doc = load("applications.json")
     profile = load("profile.json")
+    with_resume = "--with-resume" in sys.argv
+    resume = load("resume.json") if (with_resume and (DATA / "resume.json").exists()) else {"projects": []}
     levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
     jobs = jobs_doc.get("jobs", [])
@@ -499,6 +531,8 @@ def main():
     page.append('<nav class="tabs"><div class="wrap"><div class="tabbar">')
     page.append('<button class="active" data-tab="list">① 职位列表</button>')
     page.append('<button data-tab="req">② 技能要求</button>')
+    if resume.get("projects"):
+        page.append('<button data-tab="resume">③ 总简历能力池</button>')
     page.append("</div></div></nav><main>")
 
     # module 1
@@ -621,7 +655,46 @@ def main():
         page.append('<div class="note-card"><h4>%s</h4><p>%s</p></div>' % (esc(h), esc(p_)))
     page.append("</div>")
 
-    page.append("</div></section></main>")
+    page.append("</div></section>")
+
+    # module 3 —— 总简历能力池（仅本地构建，不进公开页）
+    projs = resume.get("projects", [])
+    if projs:
+        rmeta = resume.get("meta", {})
+        page.append('<section id="tab-resume" hidden><div class="wrap">')
+        page.append('<h2 class="sec">%s</h2>' % esc(rmeta.get("title", "总简历能力池")))
+        page.append('<p class="hint">%s<br><span style="opacity:.75">%s · %s</span></p>'
+                    % (esc(rmeta.get("subtitle", "")), esc(rmeta.get("source", "")), esc(rmeta.get("note", ""))))
+
+        page.append('<div class="panel"><div class="cappool">')
+        for t in resume.get("capability_tags", []):
+            page.append('<span class="cap">%s</span>' % esc(t))
+        page.append("</div></div>")
+
+        page.append('<h2 class="sec">项目经历（%d 条）</h2>' % len(projs))
+        page.append('<div class="projs">')
+        for i, pr in enumerate(projs, 1):
+            page.append('<article class="proj">')
+            page.append('<div class="proj-head"><span class="proj-idx">%02d</span><h3>%s</h3></div>' % (i, esc(pr.get("title"))))
+            page.append('<div class="tags">%s</div>' % "".join('<span class="tag">%s</span>' % esc(t) for t in pr.get("tags", [])))
+            page.append('<div class="pblock"><span class="lbl">背景</span><p>%s</p></div>' % esc(pr.get("context")))
+            acts = pr.get("actions") or []
+            if acts:
+                page.append('<div class="pblock"><span class="lbl">我的动作</span><ol>%s</ol></div>'
+                            % "".join("<li>%s</li>" % esc(a) for a in acts))
+            techs = pr.get("tech") or []
+            if techs:
+                page.append('<div class="pblock"><span class="lbl">技术方案</span><div class="tags">%s</div></div>'
+                            % "".join('<span class="tag tech">%s</span>' % esc(t) for t in techs))
+            page.append('<div class="pblock"><span class="lbl">难点与权衡</span><p>%s</p></div>' % esc(pr.get("tradeoff")))
+            page.append('<div class="pblock"><span class="lbl">结果</span><p class="res">%s</p></div>' % esc(pr.get("result")))
+            bullet = pr.get("bullet", "")
+            page.append('<div class="bullet"><span class="lbl">简历句式</span><p>%s</p>'
+                        '<button class="copy" data-text="%s">复制</button></div>' % (esc(bullet), esc(bullet)))
+            page.append("</article>")
+        page.append("</div>")
+        page.append("</div></section>")
+    page.append("</main>")
 
     # footer
     page.append('<footer><div class="wrap">')
@@ -630,8 +703,9 @@ def main():
     page.append("</div></footer>")
     page.append("<script>%s</script></body></html>" % JS)
 
-    OUT.write_text("".join(page), encoding="utf-8")
-    print("wrote %s (%d jobs, %d actionable)" % (OUT, len(jobs), len(actionable)))
+    target = (ROOT / "index.local.html") if projs else OUT
+    target.write_text("".join(page), encoding="utf-8")
+    print("wrote %s (%d jobs, %d actionable, %d projects)" % (target, len(jobs), len(actionable), len(projs)))
 
 
 if __name__ == "__main__":
