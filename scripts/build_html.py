@@ -684,7 +684,7 @@ def main():
         groups = {}
         for pr in projs:
             groups.setdefault(pr.get("group", "其他"), []).append(pr)
-        order = ["风控", "行情", "投组", "账户体系（CeFi / DeFi）", "差异化亮点", "核心业务（CAM 资产管理）", "AI 与数据", "数据与行情", "平台与工程效能", "技术设计"]
+        order = ["风控", "行情", "投组", "账户体系（CeFi / DeFi）", "数据与 AI", "平台与工程效能", "架构与技术设计"]
         ordered = [g for g in order if g in groups] + [g for g in groups if g not in order]
         n = 0
         for g in ordered:
@@ -694,7 +694,7 @@ def main():
                 n += 1
                 page.append('<article class="proj">')
                 prov = pr.get("provenance", "")
-                pcls = {"本人提交": "prov-own", "核心模块": "prov-core", "加分项": "prov-bonus"}.get(prov, "prov-team")
+                pcls = {"本人提交": "prov-own", "核心模块": "prov-core", "加分项": "prov-bonus", "团队项目": "prov-team"}.get(prov, "prov-team")
                 page.append('<div class="proj-head"><span class="proj-idx">%02d</span><h3>%s</h3>'
                             '<span class="prov %s">%s</span></div>'
                             % (n, esc(pr.get("title")), pcls, esc(prov)))
