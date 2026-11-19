@@ -208,6 +208,8 @@ table.rank td.dom{color:var(--muted);font-size:12.5px;line-height:1.5}
 .prov{font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
 .prov-own{color:var(--t0);border-color:var(--t0)}
 .prov-team{color:var(--t2);border-style:dashed}
+.prov-core{color:var(--brand);border-color:var(--brand)}
+.prov-bonus{color:var(--t1);border-color:var(--t1)}
 .proj .tags{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 4px}
 .tag.tech{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 40%,transparent)}
 .pblock{margin-top:12px}
@@ -666,10 +668,11 @@ def main():
     if projs:
         rmeta = resume.get("meta", {})
         page.append('<section id="tab-resume" hidden><div class="wrap">')
-        own = sum(1 for x in projs if x.get("provenance") == "本人提交")
-        team = len(projs) - own
-        page.append('<h2 class="sec">%s（%d 条 · 本人提交 %d · 团队项目 %d）</h2>'
-                    % (esc(rmeta.get("title", "总简历能力池")), len(projs), own, team))
+        from collections import Counter as _Cnt
+        prov_counts = _Cnt(x.get("provenance", "其他") for x in projs)
+        prov_line = " · ".join("%s %d" % (k, v) for k, v in prov_counts.most_common())
+        page.append('<h2 class="sec">%s（%d 条 · %s）</h2>'
+                    % (esc(rmeta.get("title", "总简历能力池")), len(projs), esc(prov_line)))
         page.append('<p class="hint">%s<br><span style="opacity:.75">%s · %s</span></p>'
                     % (esc(rmeta.get("subtitle", "")), esc(rmeta.get("source", "")), esc(rmeta.get("note", ""))))
 
@@ -681,7 +684,7 @@ def main():
         groups = {}
         for pr in projs:
             groups.setdefault(pr.get("group", "其他"), []).append(pr)
-        order = ["核心业务（CAM 资产管理）", "AI 与数据", "数据与行情", "平台与工程效能", "技术设计"]
+        order = ["风控", "行情", "投组", "账户体系（CeFi / DeFi）", "差异化亮点", "核心业务（CAM 资产管理）", "AI 与数据", "数据与行情", "平台与工程效能", "技术设计"]
         ordered = [g for g in order if g in groups] + [g for g in groups if g not in order]
         n = 0
         for g in ordered:
@@ -691,7 +694,7 @@ def main():
                 n += 1
                 page.append('<article class="proj">')
                 prov = pr.get("provenance", "")
-                pcls = "prov-own" if prov == "本人提交" else "prov-team"
+                pcls = {"本人提交": "prov-own", "核心模块": "prov-core", "加分项": "prov-bonus"}.get(prov, "prov-team")
                 page.append('<div class="proj-head"><span class="proj-idx">%02d</span><h3>%s</h3>'
                             '<span class="prov %s">%s</span></div>'
                             % (n, esc(pr.get("title")), pcls, esc(prov)))
