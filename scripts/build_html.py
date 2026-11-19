@@ -684,7 +684,7 @@ def main():
         groups = {}
         for pr in projs:
             groups.setdefault(pr.get("group", "其他"), []).append(pr)
-        order = ["风控", "行情", "投组", "账户体系（CeFi / DeFi）", "数据与 AI", "平台与工程效能", "架构与技术设计"]
+        order = ["风控", "行情", "投组", "账户体系（CeFi / DeFi）", "Agent 与 AI 平台", "内部平台", "平台与工程效能", "架构与技术设计", "产品与设计"]
         ordered = [g for g in order if g in groups] + [g for g in groups if g not in order]
         n = 0
         for g in ordered:
