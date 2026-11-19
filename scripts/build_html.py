@@ -671,28 +671,36 @@ def main():
             page.append('<span class="cap">%s</span>' % esc(t))
         page.append("</div></div>")
 
-        page.append('<h2 class="sec">项目经历（%d 条）</h2>' % len(projs))
-        page.append('<div class="projs">')
-        for i, pr in enumerate(projs, 1):
-            page.append('<article class="proj">')
-            page.append('<div class="proj-head"><span class="proj-idx">%02d</span><h3>%s</h3></div>' % (i, esc(pr.get("title"))))
-            page.append('<div class="tags">%s</div>' % "".join('<span class="tag">%s</span>' % esc(t) for t in pr.get("tags", [])))
-            page.append('<div class="pblock"><span class="lbl">背景</span><p>%s</p></div>' % esc(pr.get("context")))
-            acts = pr.get("actions") or []
-            if acts:
-                page.append('<div class="pblock"><span class="lbl">我的动作</span><ol>%s</ol></div>'
-                            % "".join("<li>%s</li>" % esc(a) for a in acts))
-            techs = pr.get("tech") or []
-            if techs:
-                page.append('<div class="pblock"><span class="lbl">技术方案</span><div class="tags">%s</div></div>'
-                            % "".join('<span class="tag tech">%s</span>' % esc(t) for t in techs))
-            page.append('<div class="pblock"><span class="lbl">难点与权衡</span><p>%s</p></div>' % esc(pr.get("tradeoff")))
-            page.append('<div class="pblock"><span class="lbl">结果</span><p class="res">%s</p></div>' % esc(pr.get("result")))
-            bullet = pr.get("bullet", "")
-            page.append('<div class="bullet"><span class="lbl">简历句式</span><p>%s</p>'
-                        '<button class="copy" data-text="%s">复制</button></div>' % (esc(bullet), esc(bullet)))
-            page.append("</article>")
-        page.append("</div>")
+        groups = {}
+        for pr in projs:
+            groups.setdefault(pr.get("group", "其他"), []).append(pr)
+        order = ["核心业务（CAM 资产管理）", "平台与工程效能", "技术设计"]
+        ordered = [g for g in order if g in groups] + [g for g in groups if g not in order]
+        n = 0
+        for g in ordered:
+            page.append('<h2 class="sec">%s（%d 条）</h2>' % (esc(g), len(groups[g])))
+            page.append('<div class="projs">')
+            for pr in groups[g]:
+                n += 1
+                page.append('<article class="proj">')
+                page.append('<div class="proj-head"><span class="proj-idx">%02d</span><h3>%s</h3></div>' % (n, esc(pr.get("title"))))
+                page.append('<div class="tags">%s</div>' % "".join('<span class="tag">%s</span>' % esc(t) for t in pr.get("tags", [])))
+                page.append('<div class="pblock"><span class="lbl">背景</span><p>%s</p></div>' % esc(pr.get("context")))
+                acts = pr.get("actions") or []
+                if acts:
+                    page.append('<div class="pblock"><span class="lbl">我的动作</span><ol>%s</ol></div>'
+                                % "".join("<li>%s</li>" % esc(a) for a in acts))
+                techs = pr.get("tech") or []
+                if techs:
+                    page.append('<div class="pblock"><span class="lbl">技术方案</span><div class="tags">%s</div></div>'
+                                % "".join('<span class="tag tech">%s</span>' % esc(t) for t in techs))
+                page.append('<div class="pblock"><span class="lbl">难点与权衡</span><p>%s</p></div>' % esc(pr.get("tradeoff")))
+                page.append('<div class="pblock"><span class="lbl">结果</span><p class="res">%s</p></div>' % esc(pr.get("result")))
+                bullet = pr.get("bullet", "")
+                page.append('<div class="bullet"><span class="lbl">简历句式</span><p>%s</p>'
+                            '<button class="copy" data-text="%s">复制</button></div>' % (esc(bullet), esc(bullet)))
+                page.append("</article>")
+            page.append("</div>")
         page.append("</div></section>")
     page.append("</main>")
 
