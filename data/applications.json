@@ -16,73 +16,133 @@
   "applications": [
     {
       "id": "app-001",
-      "job_id": "tencent-tione",
+      "job_id": "baidu-bls",
       "priority": 1,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "补 K8s + GPU 调度案例，再投",
-      "notes": "天花板最高，留给准备最充分的那一周"
+      "last_update": "2026-11-20",
+      "next_step": "高并发 + 海量数据的唯一强匹配岗位，与新写的专项经历直接对齐",
+      "notes": ""
     },
     {
       "id": "app-002",
-      "job_id": "bytedance-douyin-ecom",
+      "job_id": "wind-go",
       "priority": 2,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "整理高并发交易/电商相关项目证据",
-      "notes": "明写欢迎转 Go，是最佳入口"
+      "last_update": "2026-11-20",
+      "next_step": "金融数据龙头 + Go + 云原生，行业与栈双契合",
+      "notes": ""
     },
     {
       "id": "app-003",
-      "job_id": "bilibili-backend",
+      "job_id": "xhs-social",
       "priority": 3,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "确认是否接受纯 Go 背景（岗位 Node 为主）",
-      "notes": "年限完美命中，通过率最高"
+      "last_update": "2026-11-20",
+      "next_step": "3 年+ 且 Go 可投，IM 长连接可映射你的行情推送经验",
+      "notes": ""
     },
     {
       "id": "app-004",
-      "job_id": "bytedance-it-platform",
+      "job_id": "dewu-community",
       "priority": 4,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "确认统招本科条件；点明自己深耕的领域",
-      "notes": "统招本科是硬卡"
+      "last_update": "2026-11-20",
+      "next_step": "3 年+ 版本（非 5 年专家岗），精通 Go 正好命中",
+      "notes": ""
     },
     {
       "id": "app-005",
-      "job_id": "bytedance-intl-ecom",
+      "job_id": "ctrip-network",
       "priority": 5,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "评估英语面试能力",
-      "notes": "国际化业务，英语是隐性门槛"
+      "last_update": "2026-11-20",
+      "next_step": "Go 并发被写进硬性要求，薪资明码 28-55k·15薪",
+      "notes": ""
     },
     {
       "id": "app-006",
-      "job_id": "meituan-agent-base",
+      "job_id": "bilibili-backend",
       "priority": 6,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "补 Agent/MCP 相关认知再投",
-      "notes": "Go 明确可投，迁移成本最低的 Agent 岗"
+      "last_update": "2026-11-20",
+      "next_step": "要求最软，通过率最高，年限完美命中 3-5 年",
+      "notes": ""
     },
     {
       "id": "app-007",
-      "job_id": "meituan-agent-dev",
+      "job_id": "bytedance-douyin-ecom",
       "priority": 7,
       "stage": "待投",
       "applied_at": null,
-      "last_update": "2026-11-18",
-      "next_step": "准备 RAG/Function Call 案例",
-      "notes": "薪资明码 25-50k·15薪；JD 来自第三方，末段截断"
+      "last_update": "2026-11-20",
+      "next_step": "明写『精通 Go 或有意向转 Go』，最友好的大厂入口",
+      "notes": ""
+    },
+    {
+      "id": "app-008",
+      "job_id": "bilibili-golang",
+      "priority": 8,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "同公司 Go 优先版，可与 Node 岗二选一",
+      "notes": ""
+    },
+    {
+      "id": "app-009",
+      "job_id": "tencent-tione",
+      "priority": 9,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "天花板最高但 K8s/GPU 缺口最大，留给准备最充分时",
+      "notes": ""
+    },
+    {
+      "id": "app-010",
+      "job_id": "bytedance-it-platform",
+      "priority": 10,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "统招本科硬卡，需点明深耕领域",
+      "notes": ""
+    },
+    {
+      "id": "app-011",
+      "job_id": "bytedance-intl-ecom",
+      "priority": 11,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "国际化，英语面试是隐性门槛",
+      "notes": ""
+    },
+    {
+      "id": "app-012",
+      "job_id": "matrixport-go",
+      "priority": 12,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "加密金融行业最贴近你的背景，卡支付域需补",
+      "notes": ""
+    },
+    {
+      "id": "app-013",
+      "job_id": "meituan-agent-base",
+      "priority": 13,
+      "stage": "待投",
+      "applied_at": null,
+      "last_update": "2026-11-20",
+      "next_step": "Agent 基建方向，迁移成本低",
+      "notes": ""
     }
   ]
 }

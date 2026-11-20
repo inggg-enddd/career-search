@@ -495,7 +495,10 @@ def main():
     jobs = jobs_doc.get("jobs", [])
     apps = apps_doc.get("applications", [])
 
-    grouped = {t: [j for j in jobs if j.get("tier") == t] for t in TIERS}
+    prio = {a.get("job_id"): a.get("priority", 999) for a in apps}
+    grouped = {t: sorted([j for j in jobs if j.get("tier") == t],
+                         key=lambda x: (prio.get(x.get("id"), 999), x.get("id")))
+               for t in TIERS}
     actionable = grouped["主投"] + grouped["冲刺"] + grouped["备选"]
 
     from collections import Counter
