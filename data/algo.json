@@ -1,408 +1,979 @@
 {
   "meta": {
-    "title": "算法专题 · 高频手撕题单",
-    "subtitle": "A 榜 30 道 LeetCode 原题 + B 榜 11 道后端工程手撕，按面经出现热度排序",
-    "note": "热度为多源面经频次归一化后的相对值（0-100），用于排序，不代表命中概率。数据源：CodeTop 综合排序、字节 1727 篇面经统计、2025.4-2026.4 面经汇总。",
+    "title": "算法专题 · 热题 100 全量 + 工程手撕",
+    "subtitle": "官方热题 100 按 17 个专题分类，另附 11 道后端工程手撕题",
+    "note": "热度为面经出现频次的相对值（0-100），仅对已有面经数据的高频题标注，其余显示「—」；不是命中概率。分类沿用官方专题结构。",
     "updated": "2026-11-26"
   },
-  "tiers": [
-    {
-      "key": "P0",
-      "label": "P0 · 必刷",
-      "desc": "写不出来基本等于挂，先吃透这 10 道"
-    },
-    {
-      "key": "P1",
-      "label": "P1 · 高频",
-      "desc": "进二面后大概率遇到，覆盖后命中率显著提升"
-    },
-    {
-      "key": "P2",
-      "label": "P2 · 补充",
-      "desc": "补题型盲区，有余力再刷"
-    },
-    {
-      "key": "B",
-      "label": "B 榜 · 工程手撕",
-      "desc": "不在 LeetCode 题库里，但后端岗专考，性价比不低于 A 榜"
-    }
+  "cats": [
+    "哈希",
+    "双指针",
+    "滑动窗口",
+    "子串",
+    "普通数组",
+    "矩阵",
+    "链表",
+    "二叉树",
+    "图论",
+    "回溯",
+    "二分",
+    "栈",
+    "堆",
+    "贪心",
+    "动态规划",
+    "多维DP",
+    "技巧"
   ],
   "problems": [
     {
-      "no": "3",
-      "title": "无重复字符的最长子串",
-      "diff": "M",
-      "tier": "P0",
-      "topic": "滑动窗口",
-      "heat": 100,
-      "point": "窗口收缩的判定条件；right 指针不回退",
-      "gohint": "用 byte/[]rune 区分 ASCII 与中文；map[rune]int 记位置比记 bool 更省一次内循环",
-      "slug": "longest-substring-without-repeating-characters"
-    },
-    {
-      "no": "146",
-      "title": "LRU 缓存机制",
-      "diff": "M",
-      "tier": "P0",
-      "topic": "设计题",
-      "heat": 98,
-      "point": "哈希表 + 双向链表，get/put 都要 O(1)",
-      "gohint": "Go 用 container/list 或手写哨兵双向链表；面试更想看手写，纯 list 会被追问实现",
-      "slug": "lru-cache"
-    },
-    {
-      "no": "206",
-      "title": "反转链表",
+      "no": "1",
+      "title": "两数之和",
+      "slug": "two-sum",
       "diff": "E",
-      "tier": "P0",
-      "topic": "链表",
-      "heat": 95,
-      "point": "迭代三指针；递归写法要能说清栈深度",
-      "gohint": "先判断 head == nil；递归版注意栈溢出",
-      "slug": "reverse-linked-list"
+      "cat": "哈希",
+      "point": "边遍历边查表，避免用同一元素两次；返回下标",
+      "heat": 58
     },
     {
-      "no": "215",
-      "title": "数组中的第 K 个最大元素",
+      "no": "49",
+      "title": "字母异位词分组",
+      "slug": "group-anagrams",
       "diff": "M",
-      "tier": "P0",
-      "topic": "堆 / 快速选择",
-      "heat": 92,
-      "point": "小顶堆 or 快选；复杂度分别 O(nlogk) / 期望 O(n)",
-      "gohint": "用 Go 建堆时 container/heap 要满足接口，面试常要求手写 siftDown",
-      "slug": "kth-largest-element-in-an-array"
+      "cat": "哈希",
+      "point": "排序后作 key，或 26 位计数作 key",
+      "heat": 30
     },
     {
-      "no": "25",
-      "title": "K 个一组翻转链表",
-      "diff": "H",
-      "tier": "P0",
-      "topic": "链表",
-      "heat": 88,
-      "point": "分组翻转 + 不足 K 保持原序；边界处理",
-      "gohint": "先统计长度能省掉每次探测；注意 nil 组的返回",
-      "slug": "reverse-nodes-in-k-group"
+      "no": "128",
+      "title": "最长连续序列",
+      "slug": "longest-consecutive-sequence",
+      "diff": "M",
+      "cat": "哈希",
+      "point": "哈希集合 + 只从序列起点枚举，O(n)",
+      "heat": 35
+    },
+    {
+      "no": "283",
+      "title": "移动零",
+      "slug": "move-zeroes",
+      "diff": "E",
+      "cat": "双指针",
+      "point": "快慢指针，非零前移后补零，保持相对顺序",
+      "heat": 30
+    },
+    {
+      "no": "11",
+      "title": "盛最多水的容器",
+      "slug": "container-with-most-water",
+      "diff": "M",
+      "cat": "双指针",
+      "point": "谁矮移谁；面积 = min(h) × 宽度",
+      "heat": 32
     },
     {
       "no": "15",
       "title": "三数之和",
+      "slug": "3sum",
       "diff": "M",
-      "tier": "P0",
-      "topic": "双指针",
-      "heat": 85,
+      "cat": "双指针",
       "point": "排序后双指针 + 两层去重",
-      "gohint": "去重要写对：外层跳过重复、内层跳过重复，漏一个就出重复解",
-      "slug": "3sum"
-    },
-    {
-      "no": "53",
-      "title": "最大子数组和",
-      "diff": "M",
-      "tier": "P0",
-      "topic": "DP / 贪心",
-      "heat": 82,
-      "point": "状态定义与转移；能否给出空间 O(1)",
-      "gohint": "用 cur/max 两个变量代替 dp 数组",
-      "slug": "maximum-subarray"
-    },
-    {
-      "no": "56",
-      "title": "合并区间",
-      "diff": "M",
-      "tier": "P0",
-      "topic": "排序 / 区间",
-      "heat": 80,
-      "point": "按左端点排序后一次扫描",
-      "gohint": "结果切片 append 时注意别复用底层数组",
-      "slug": "merge-intervals"
-    },
-    {
-      "no": "102",
-      "title": "二叉树的层序遍历",
-      "diff": "M",
-      "tier": "P0",
-      "topic": "BFS",
-      "heat": 78,
-      "point": "逐层收集，区分层边界",
-      "gohint": "别写 for range queue——range 是对切片副本迭代，边遍历边 append 会把下一层混进来；先记 l := len(queue)",
-      "slug": "binary-tree-level-order-traversal"
-    },
-    {
-      "no": "21",
-      "title": "合并两个有序链表",
-      "diff": "E",
-      "tier": "P0",
-      "topic": "链表",
-      "heat": 76,
-      "point": "哨兵节点简化头部分支",
-      "gohint": "用 dummy 节点能省掉一堆 nil 判断",
-      "slug": "merge-two-sorted-lists"
-    },
-    {
-      "no": "121",
-      "title": "买卖股票的最佳时机",
-      "diff": "E",
-      "tier": "P1",
-      "topic": "贪心 / DP",
-      "heat": 72,
-      "point": "维护历史最低价，一次遍历",
-      "gohint": "空数组要返回 0",
-      "slug": "best-time-to-buy-and-sell-stock"
-    },
-    {
-      "no": "200",
-      "title": "岛屿数量",
-      "diff": "M",
-      "tier": "P1",
-      "topic": "DFS / BFS",
-      "heat": 70,
-      "point": "沉岛法；递归深度与栈溢出",
-      "gohint": "大矩阵递归可能爆栈，面试可主动提 BFS 或并查集替代",
-      "slug": "number-of-islands"
-    },
-    {
-      "no": "46",
-      "title": "全排列",
-      "diff": "M",
-      "tier": "P1",
-      "topic": "回溯",
-      "heat": 68,
-      "point": "used 数组 + 撤销选择",
-      "gohint": "path 要 copy 后再 append 到结果，否则全是同一个切片",
-      "slug": "permutations"
-    },
-    {
-      "no": "20",
-      "title": "有效的括号",
-      "diff": "E",
-      "tier": "P1",
-      "topic": "栈",
-      "heat": 66,
-      "point": "左入栈、右匹配；最后栈空",
-      "gohint": "奇数长度直接 false；用 []rune 处理",
-      "slug": "valid-parentheses"
-    },
-    {
-      "no": "153",
-      "title": "寻找旋转排序数组中的最小值",
-      "diff": "M",
-      "tier": "P1",
-      "topic": "二分",
-      "heat": 64,
-      "point": "与右端点比较决定收缩方向",
-      "gohint": "循环条件 left < right，返回 nums[left]",
-      "slug": "find-minimum-in-rotated-sorted-array"
-    },
-    {
-      "no": "143",
-      "title": "重排链表",
-      "diff": "M",
-      "tier": "P1",
-      "topic": "链表 + 双指针",
-      "heat": 62,
-      "point": "找中点 → 反转后半 → 合并",
-      "gohint": "三步各是一个独立子题，可拆开讲",
-      "slug": "reorder-list"
-    },
-    {
-      "no": "198",
-      "title": "打家劫舍",
-      "diff": "M",
-      "tier": "P1",
-      "topic": "DP",
-      "heat": 60,
-      "point": "相邻不能选；滚动变量优化",
-      "gohint": "边界 n==0/1",
-      "slug": "house-robber"
-    },
-    {
-      "no": "1",
-      "title": "两数之和",
-      "diff": "E",
-      "tier": "P1",
-      "topic": "哈希",
-      "heat": 58,
-      "point": "边遍历边查表，避免同一元素用两次",
-      "gohint": "返回下标不是值",
-      "slug": "two-sum"
+      "heat": 85
     },
     {
       "no": "42",
       "title": "接雨水",
+      "slug": "trapping-rain-water",
       "diff": "H",
-      "tier": "P1",
-      "topic": "双指针 / 单调栈",
-      "heat": 56,
-      "point": "左右最大值取小；或单调栈按层算",
-      "gohint": "双指针空间 O(1)，比 DP 数组更能体现水平",
-      "slug": "trapping-rain-water"
+      "cat": "双指针",
+      "point": "左右最大值取小；双指针版空间 O(1)",
+      "heat": 56
     },
     {
-      "no": "160",
-      "title": "相交链表",
-      "diff": "E",
-      "tier": "P1",
-      "topic": "双指针",
-      "heat": 54,
-      "point": "走完自己走对方，两轮必相遇",
-      "gohint": "无交点时同时为 nil，循环条件写 a != b",
-      "slug": "intersection-of-two-linked-lists"
-    },
-    {
-      "no": "103",
-      "title": "二叉树的锯齿形层序遍历",
+      "no": "3",
+      "title": "无重复字符的最长子串",
+      "slug": "longest-substring-without-repeating-characters",
       "diff": "M",
-      "tier": "P2",
-      "topic": "BFS",
-      "heat": 50,
-      "point": "层序基础上按层序奇偶决定插入方向",
-      "gohint": "可用双端队列或插入时反转当前层",
-      "slug": "binary-tree-zigzag-level-order-traversal"
+      "cat": "滑动窗口",
+      "point": "窗口收缩判定；right 不回退",
+      "heat": 100
     },
     {
-      "no": "236",
-      "title": "二叉树的最近公共祖先",
+      "no": "438",
+      "title": "找到字符串中所有字母异位词",
+      "slug": "find-all-anagrams-in-a-string",
       "diff": "M",
-      "tier": "P2",
-      "topic": "树 / 递归",
-      "heat": 48,
-      "point": "后序遍历，左右各自找到即当前为 LCA",
-      "gohint": "注意 p/q 可能是对方祖先的情况",
-      "slug": "lowest-common-ancestor-of-a-binary-tree"
+      "cat": "滑动窗口",
+      "point": "固定窗口 + 26 字母计数种类比较",
+      "heat": 28
     },
     {
-      "no": "92",
-      "title": "反转链表 II",
+      "no": "560",
+      "title": "和为 K 的子数组",
+      "slug": "subarray-sum-equals-k",
       "diff": "M",
-      "tier": "P2",
-      "topic": "链表",
-      "heat": 46,
-      "point": "定位到 m-1，局部反转后接回",
-      "gohint": "用 dummy 处理 m==1",
-      "slug": "reverse-linked-list-ii"
+      "cat": "子串",
+      "point": "前缀和 + 哈希计数（和两数之和同构）",
+      "heat": 32
+    },
+    {
+      "no": "239",
+      "title": "滑动窗口最大值",
+      "slug": "sliding-window-maximum",
+      "diff": "H",
+      "cat": "子串",
+      "point": "单调双端队列，维护下标",
+      "heat": 35
+    },
+    {
+      "no": "76",
+      "title": "最小覆盖子串",
+      "slug": "minimum-window-substring",
+      "diff": "H",
+      "cat": "子串",
+      "point": "need/window 计数，valid 变量判断满足",
+      "heat": 35
+    },
+    {
+      "no": "53",
+      "title": "最大子数组和",
+      "slug": "maximum-subarray",
+      "diff": "M",
+      "cat": "普通数组",
+      "point": "Kadane；cur/max 两个变量代替 dp 数组",
+      "heat": 82
+    },
+    {
+      "no": "56",
+      "title": "合并区间",
+      "slug": "merge-intervals",
+      "diff": "M",
+      "cat": "普通数组",
+      "point": "按左端点排序后一次扫描",
+      "heat": 80
+    },
+    {
+      "no": "189",
+      "title": "轮转数组",
+      "slug": "rotate-array",
+      "diff": "M",
+      "cat": "普通数组",
+      "point": "三次反转，或环状替换 O(1) 空间",
+      "heat": 30
+    },
+    {
+      "no": "238",
+      "title": "除自身以外数组的乘积",
+      "slug": "product-of-array-except-self",
+      "diff": "M",
+      "cat": "普通数组",
+      "point": "前后缀乘积，原地复用输出数组",
+      "heat": 28
+    },
+    {
+      "no": "41",
+      "title": "缺失的第一个正数",
+      "slug": "first-missing-positive",
+      "diff": "H",
+      "cat": "普通数组",
+      "point": "原地标记（把 x 换到下标 x-1）；空间 O(1)",
+      "heat": 25
+    },
+    {
+      "no": "73",
+      "title": "矩阵置零",
+      "slug": "set-matrix-zeroes",
+      "diff": "M",
+      "cat": "矩阵",
+      "point": "用首行首列当标记位，避免额外空间",
+      "heat": 25
     },
     {
       "no": "54",
       "title": "螺旋矩阵",
+      "slug": "spiral-matrix",
       "diff": "M",
-      "tier": "P2",
-      "topic": "模拟",
-      "heat": 44,
+      "cat": "矩阵",
       "point": "四条边界收缩，注意重复访问",
-      "gohint": "循环里每走完一条边要判断边界是否越界",
-      "slug": "spiral-matrix"
+      "heat": 44
     },
     {
-      "no": "5",
-      "title": "最长回文子串",
+      "no": "48",
+      "title": "旋转图像",
+      "slug": "rotate-image",
       "diff": "M",
-      "tier": "P2",
-      "topic": "DP / 中心扩展",
-      "heat": 42,
-      "point": "中心扩展更省空间；DP 要说清状态",
-      "gohint": "奇偶两种中心都要扩展",
-      "slug": "longest-palindromic-substring"
+      "cat": "矩阵",
+      "point": "先转置再左右反转",
+      "heat": 25
     },
     {
-      "no": "19",
-      "title": "删除链表的倒数第 N 个节点",
+      "no": "240",
+      "title": "搜索二维矩阵 II",
+      "slug": "search-a-2d-matrix-ii",
       "diff": "M",
-      "tier": "P2",
-      "topic": "快慢指针",
-      "heat": 40,
-      "point": "快指针先走 N，再同步走",
-      "gohint": "用 dummy 处理删除头节点",
-      "slug": "remove-nth-node-from-end-of-list"
+      "cat": "矩阵",
+      "point": "从右上角出发，比目标大往左，小往下",
+      "heat": 28
     },
     {
-      "no": "141",
-      "title": "环形链表",
+      "no": "160",
+      "title": "相交链表",
+      "slug": "intersection-of-two-linked-lists",
       "diff": "E",
-      "tier": "P2",
-      "topic": "快慢指针",
-      "heat": 38,
-      "point": "快走两步慢走一步，相遇即有环",
-      "gohint": "循环条件 fast != nil && fast.Next != nil",
-      "slug": "linked-list-cycle"
+      "cat": "链表",
+      "point": "走完自己走对方，两轮必相遇",
+      "heat": 54
+    },
+    {
+      "no": "206",
+      "title": "反转链表",
+      "slug": "reverse-linked-list",
+      "diff": "E",
+      "cat": "链表",
+      "point": "迭代三指针；递归注意栈深度",
+      "heat": 95
     },
     {
       "no": "234",
       "title": "回文链表",
+      "slug": "palindrome-linked-list",
       "diff": "E",
-      "tier": "P2",
-      "topic": "链表",
-      "heat": 36,
-      "point": "找中点 + 反转后半 + 比较",
-      "gohint": "可提「是否允许修改原链表」这个追问",
-      "slug": "palindrome-linked-list"
+      "cat": "链表",
+      "point": "快慢找中点 + 反转后半 + 比较",
+      "heat": 36
+    },
+    {
+      "no": "141",
+      "title": "环形链表",
+      "slug": "linked-list-cycle",
+      "diff": "E",
+      "cat": "链表",
+      "point": "快慢指针判环",
+      "heat": 38
+    },
+    {
+      "no": "142",
+      "title": "环形链表 II",
+      "slug": "linked-list-cycle-ii",
+      "diff": "M",
+      "cat": "链表",
+      "point": "相遇后从头与相遇点同步走找入口",
+      "heat": 40
+    },
+    {
+      "no": "21",
+      "title": "合并两个有序链表",
+      "slug": "merge-two-sorted-lists",
+      "diff": "E",
+      "cat": "链表",
+      "point": "哨兵节点简化头部分支",
+      "heat": 76
+    },
+    {
+      "no": "2",
+      "title": "两数相加",
+      "slug": "add-two-numbers",
+      "diff": "M",
+      "cat": "链表",
+      "point": "逐位相加 + 进位；注意最后进位",
+      "heat": 50
+    },
+    {
+      "no": "19",
+      "title": "删除链表的倒数第 N 个结点",
+      "slug": "remove-nth-node-from-end-of-list",
+      "diff": "M",
+      "cat": "链表",
+      "point": "快指针先走 N，再同步；用 dummy 处理删头",
+      "heat": 40
+    },
+    {
+      "no": "24",
+      "title": "两两交换链表中的节点",
+      "slug": "swap-nodes-in-pairs",
+      "diff": "M",
+      "cat": "链表",
+      "point": "三指针或递归",
+      "heat": 45
+    },
+    {
+      "no": "25",
+      "title": "K 个一组翻转链表",
+      "slug": "reverse-nodes-in-k-group",
+      "diff": "H",
+      "cat": "链表",
+      "point": "分组翻转 + 不足 K 保持；先统计长度",
+      "heat": 88
+    },
+    {
+      "no": "138",
+      "title": "随机链表的复制",
+      "slug": "copy-list-with-random-pointer",
+      "diff": "M",
+      "cat": "链表",
+      "point": "哈希表映射新旧节点，或拼接拆分（省空间）",
+      "heat": 35
+    },
+    {
+      "no": "148",
+      "title": "排序链表",
+      "slug": "sort-list",
+      "diff": "M",
+      "cat": "链表",
+      "point": "归并排序：快慢找中点 + 合并",
+      "heat": 45
+    },
+    {
+      "no": "23",
+      "title": "合并 K 个升序链表",
+      "slug": "merge-k-sorted-lists",
+      "diff": "H",
+      "cat": "链表",
+      "point": "小顶堆，或两两归并分治",
+      "heat": 40
+    },
+    {
+      "no": "146",
+      "title": "LRU 缓存",
+      "slug": "lru-cache",
+      "diff": "M",
+      "cat": "链表",
+      "point": "哈希 + 双向链表，get/put 都 O(1)",
+      "heat": 98
+    },
+    {
+      "no": "94",
+      "title": "二叉树的中序遍历",
+      "slug": "binary-tree-inorder-traversal",
+      "diff": "E",
+      "cat": "二叉树",
+      "point": "递归 / 显式栈；Morris 是加分项",
+      "heat": 36
     },
     {
       "no": "104",
       "title": "二叉树的最大深度",
+      "slug": "maximum-depth-of-binary-tree",
       "diff": "E",
-      "tier": "P2",
-      "topic": "DFS",
-      "heat": 34,
+      "cat": "二叉树",
       "point": "递归取左右最大 +1",
-      "gohint": "空树返回 0",
-      "slug": "maximum-depth-of-binary-tree"
+      "heat": 34
     },
+    {
+      "no": "226",
+      "title": "翻转二叉树",
+      "slug": "invert-binary-tree",
+      "diff": "E",
+      "cat": "二叉树",
+      "point": "递归交换左右子树",
+      "heat": 35
+    },
+    {
+      "no": "101",
+      "title": "对称二叉树",
+      "slug": "symmetric-tree",
+      "diff": "E",
+      "cat": "二叉树",
+      "point": "双指针镜像递归比较",
+      "heat": 30
+    },
+    {
+      "no": "543",
+      "title": "二叉树的直径",
+      "slug": "diameter-of-binary-tree",
+      "diff": "E",
+      "cat": "二叉树",
+      "point": "后序求左右深度，答案为左右之和的最大值",
+      "heat": 30
+    },
+    {
+      "no": "102",
+      "title": "二叉树的层序遍历",
+      "slug": "binary-tree-level-order-traversal",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "先记 len(queue) 再按层处理",
+      "heat": 78
+    },
+    {
+      "no": "108",
+      "title": "将有序数组转换为二叉搜索树",
+      "slug": "convert-sorted-array-to-binary-search-tree",
+      "diff": "E",
+      "cat": "二叉树",
+      "point": "取中点递归，保证平衡",
+      "heat": 25
+    },
+    {
+      "no": "98",
+      "title": "验证二叉搜索树",
+      "slug": "validate-binary-search-tree",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "传上下界，不要只比父节点",
+      "heat": 28
+    },
+    {
+      "no": "230",
+      "title": "二叉搜索树中第 K 小的元素",
+      "slug": "kth-smallest-element-in-a-bst",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "中序遍历计数",
+      "heat": 25
+    },
+    {
+      "no": "199",
+      "title": "二叉树的右视图",
+      "slug": "binary-tree-right-side-view",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "层序取每层最后一个",
+      "heat": 25
+    },
+    {
+      "no": "114",
+      "title": "二叉树展开为链表",
+      "slug": "flatten-binary-tree-to-linked-list",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "先序前驱，或后序处理再拼接",
+      "heat": 22
+    },
+    {
+      "no": "105",
+      "title": "从前序与中序遍历序列构造二叉树",
+      "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "哈希存中序下标，递归切分",
+      "heat": 25
+    },
+    {
+      "no": "437",
+      "title": "路径总和 III",
+      "slug": "path-sum-iii",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "前缀和 + 回溯撤销（关键：进入/退出时增删）",
+      "heat": 22
+    },
+    {
+      "no": "236",
+      "title": "二叉树的最近公共祖先",
+      "slug": "lowest-common-ancestor-of-a-binary-tree",
+      "diff": "M",
+      "cat": "二叉树",
+      "point": "后序；左右各找到即当前为 LCA",
+      "heat": 48
+    },
+    {
+      "no": "124",
+      "title": "二叉树中的最大路径和",
+      "slug": "binary-tree-maximum-path-sum",
+      "diff": "H",
+      "cat": "二叉树",
+      "point": "后序；贡献值取 max(0, ...)，答案在「拐点」更新",
+      "heat": 35
+    },
+    {
+      "no": "200",
+      "title": "岛屿数量",
+      "slug": "number-of-islands",
+      "diff": "M",
+      "cat": "图论",
+      "point": "DFS/BFS 沉岛；大矩阵注意递归深度",
+      "heat": 70
+    },
+    {
+      "no": "994",
+      "title": "腐烂的橘子",
+      "slug": "rotting-oranges",
+      "diff": "M",
+      "cat": "图论",
+      "point": "多源 BFS，按层计时",
+      "heat": 28
+    },
+    {
+      "no": "207",
+      "title": "课程表",
+      "slug": "course-schedule",
+      "diff": "M",
+      "cat": "图论",
+      "point": "拓扑排序（Kahn）或 DFS 判环",
+      "heat": 35
+    },
+    {
+      "no": "208",
+      "title": "实现 Trie（前缀树）",
+      "slug": "implement-trie-prefix-tree",
+      "diff": "M",
+      "cat": "图论",
+      "point": "多叉字典树；children 用 map 或 [26]*Node",
+      "heat": 30
+    },
+    {
+      "no": "46",
+      "title": "全排列",
+      "slug": "permutations",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "used 数组；path 要 copy 后 append",
+      "heat": 68
+    },
+    {
+      "no": "78",
+      "title": "子集",
+      "slug": "subsets",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "选/不选，或按起点枚举",
+      "heat": 35
+    },
+    {
+      "no": "17",
+      "title": "电话号码的字母组合",
+      "slug": "letter-combinations-of-a-phone-number",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "映射表 + 索引递归",
+      "heat": 30
+    },
+    {
+      "no": "39",
+      "title": "组合总和",
+      "slug": "combination-sum",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "可重复选：递归时 start 不变；剪枝排序",
+      "heat": 30
+    },
+    {
+      "no": "22",
+      "title": "括号生成",
+      "slug": "generate-parentheses",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "左括号数 < n 可加左，右 < 左 可加右",
+      "heat": 28
+    },
+    {
+      "no": "79",
+      "title": "单词搜索",
+      "slug": "word-search",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "原地标记已访问再恢复",
+      "heat": 25
+    },
+    {
+      "no": "131",
+      "title": "分割回文串",
+      "slug": "palindrome-partitioning",
+      "diff": "M",
+      "cat": "回溯",
+      "point": "回溯 + 预判回文（DP 预处理更快）",
+      "heat": 20
+    },
+    {
+      "no": "51",
+      "title": "N 皇后",
+      "slug": "n-queens",
+      "diff": "H",
+      "cat": "回溯",
+      "point": "列/主对角/副对角三个集合判冲突",
+      "heat": 20
+    },
+    {
+      "no": "35",
+      "title": "搜索插入位置",
+      "slug": "search-insert-position",
+      "diff": "E",
+      "cat": "二分",
+      "point": "标准 lower_bound",
+      "heat": 25
+    },
+    {
+      "no": "74",
+      "title": "搜索二维矩阵",
+      "slug": "search-a-2d-matrix",
+      "diff": "M",
+      "cat": "二分",
+      "point": "整体看作一维数组做二分",
+      "heat": 22
+    },
+    {
+      "no": "34",
+      "title": "在排序数组中查找元素的第一个和最后一个位置",
+      "slug": "find-first-and-last-position-of-element-in-sorted-array",
+      "diff": "M",
+      "cat": "二分",
+      "point": "两次二分：找左边界与右边界",
+      "heat": 20
+    },
+    {
+      "no": "33",
+      "title": "搜索旋转排序数组",
+      "slug": "search-in-rotated-sorted-array",
+      "diff": "M",
+      "cat": "二分",
+      "point": "先判哪半有序，再判目标是否在有序半区",
+      "heat": 32
+    },
+    {
+      "no": "153",
+      "title": "寻找旋转排序数组中的最小值",
+      "slug": "find-minimum-in-rotated-sorted-array",
+      "diff": "M",
+      "cat": "二分",
+      "point": "与右端点比较决定收缩方向",
+      "heat": 64
+    },
+    {
+      "no": "4",
+      "title": "寻找两个正序数组的中位数",
+      "slug": "median-of-two-sorted-arrays",
+      "diff": "H",
+      "cat": "二分",
+      "point": "对较短数组二分划分，O(log min(m,n))",
+      "heat": 30
+    },
+    {
+      "no": "20",
+      "title": "有效的括号",
+      "slug": "valid-parentheses",
+      "diff": "E",
+      "cat": "栈",
+      "point": "左入栈右匹配；末尾栈空",
+      "heat": 66
+    },
+    {
+      "no": "155",
+      "title": "最小栈",
+      "slug": "min-stack",
+      "diff": "M",
+      "cat": "栈",
+      "point": "辅助栈同步存当前最小值",
+      "heat": 30
+    },
+    {
+      "no": "394",
+      "title": "字符串解码",
+      "slug": "decode-string",
+      "diff": "M",
+      "cat": "栈",
+      "point": "双栈：数字栈与字符串栈",
+      "heat": 28
+    },
+    {
+      "no": "739",
+      "title": "每日温度",
+      "slug": "daily-temperatures",
+      "diff": "M",
+      "cat": "栈",
+      "point": "单调栈存下标",
+      "heat": 32
+    },
+    {
+      "no": "84",
+      "title": "柱状图中最大的矩形",
+      "slug": "largest-rectangle-in-histogram",
+      "diff": "H",
+      "cat": "栈",
+      "point": "单调栈 + 哨兵，两端补 0 省边界判断",
+      "heat": 25
+    },
+    {
+      "no": "215",
+      "title": "数组中的第 K 个最大元素",
+      "slug": "kth-largest-element-in-an-array",
+      "diff": "M",
+      "cat": "堆",
+      "point": "小顶堆 O(nlogk) 或快选期望 O(n)",
+      "heat": 92
+    },
+    {
+      "no": "347",
+      "title": "前 K 个高频元素",
+      "slug": "top-k-frequent-elements",
+      "diff": "M",
+      "cat": "堆",
+      "point": "哈希计数 + 小顶堆，或桶排序",
+      "heat": 30
+    },
+    {
+      "no": "295",
+      "title": "数据流的中位数",
+      "slug": "find-median-from-data-stream",
+      "diff": "H",
+      "cat": "堆",
+      "point": "大顶堆存小半，小顶堆存大半",
+      "heat": 20
+    },
+    {
+      "no": "121",
+      "title": "买卖股票的最佳时机",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "diff": "E",
+      "cat": "贪心",
+      "point": "维护历史最低价，一次遍历",
+      "heat": 72
+    },
+    {
+      "no": "55",
+      "title": "跳跃游戏",
+      "slug": "jump-game",
+      "diff": "M",
+      "cat": "贪心",
+      "point": "维护最远可达下标",
+      "heat": 25
+    },
+    {
+      "no": "45",
+      "title": "跳跃游戏 II",
+      "slug": "jump-game-ii",
+      "diff": "M",
+      "cat": "贪心",
+      "point": "按层扩展边界，边界内最远决定下一层",
+      "heat": 20
+    },
+    {
+      "no": "763",
+      "title": "划分字母区间",
+      "slug": "partition-labels",
+      "diff": "M",
+      "cat": "贪心",
+      "point": "记录每个字母最后位置，边扫描边更新右界",
+      "heat": 18
+    },
+    {
+      "no": "70",
+      "title": "爬楼梯",
+      "slug": "climbing-stairs",
+      "diff": "E",
+      "cat": "动态规划",
+      "point": "斐波那契；滚动变量",
+      "heat": 35
+    },
+    {
+      "no": "118",
+      "title": "杨辉三角",
+      "slug": "pascals-triangle",
+      "diff": "E",
+      "cat": "动态规划",
+      "point": "逐层构造",
+      "heat": 22
+    },
+    {
+      "no": "198",
+      "title": "打家劫舍",
+      "slug": "house-robber",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "相邻不能选；滚动变量",
+      "heat": 60
+    },
+    {
+      "no": "279",
+      "title": "完全平方数",
+      "slug": "perfect-squares",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "完全背包，或 BFS 最短步数",
+      "heat": 20
+    },
+    {
+      "no": "322",
+      "title": "零钱兑换",
+      "slug": "coin-change",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "完全背包求最小个数；初始化为无穷",
+      "heat": 32
+    },
+    {
+      "no": "139",
+      "title": "单词拆分",
+      "slug": "word-break",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "dp[i] 表示前 i 位可拆；枚举切割点",
+      "heat": 30
+    },
+    {
+      "no": "300",
+      "title": "最长递增子序列",
+      "slug": "longest-increasing-subsequence",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "O(n²) DP 或 贪心+二分 O(nlogn)",
+      "heat": 35
+    },
+    {
+      "no": "152",
+      "title": "乘积最大子数组",
+      "slug": "maximum-product-subarray",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "同时维护最大与最小（负数会翻转）",
+      "heat": 22
+    },
+    {
+      "no": "416",
+      "title": "分割等和子集",
+      "slug": "partition-equal-subset-sum",
+      "diff": "M",
+      "cat": "动态规划",
+      "point": "转 01 背包；一维数组倒序更新",
+      "heat": 20
+    },
+    {
+      "no": "62",
+      "title": "不同路径",
+      "slug": "unique-paths",
+      "diff": "M",
+      "cat": "多维DP",
+      "point": "dp[i][j]=dp[i-1][j]+dp[i][j-1]，可压成一维",
+      "heat": 28
+    },
+    {
+      "no": "64",
+      "title": "最小路径和",
+      "slug": "minimum-path-sum",
+      "diff": "M",
+      "cat": "多维DP",
+      "point": "原地更新即可",
+      "heat": 22
+    },
+    {
+      "no": "5",
+      "title": "最长回文子串",
+      "slug": "longest-palindromic-substring",
+      "diff": "M",
+      "cat": "多维DP",
+      "point": "中心扩展更省空间；奇偶两种中心",
+      "heat": 42
+    },
+    {
+      "no": "1143",
+      "title": "最长公共子序列",
+      "slug": "longest-common-subsequence",
+      "diff": "M",
+      "cat": "多维DP",
+      "point": "两串 DP，相等取左上+1，否则取上/左最大",
+      "heat": 20
+    },
+    {
+      "no": "72",
+      "title": "编辑距离",
+      "slug": "edit-distance",
+      "diff": "H",
+      "cat": "多维DP",
+      "point": "插入/删除/替换三选一取最小",
+      "heat": 25
+    },
+    {
+      "no": "136",
+      "title": "只出现一次的数字",
+      "slug": "single-number",
+      "diff": "E",
+      "cat": "技巧",
+      "point": "异或：a^a=0, a^0=a",
+      "heat": 28
+    },
+    {
+      "no": "169",
+      "title": "多数元素",
+      "slug": "majority-element",
+      "diff": "E",
+      "cat": "技巧",
+      "point": "摩尔投票；或哈希计数",
+      "heat": 25
+    },
+    {
+      "no": "75",
+      "title": "颜色分类",
+      "slug": "sort-colors",
+      "diff": "M",
+      "cat": "技巧",
+      "point": "三指针 / 荷兰国旗问题",
+      "heat": 22
+    },
+    {
+      "no": "31",
+      "title": "下一个排列",
+      "slug": "next-permutation",
+      "diff": "M",
+      "cat": "技巧",
+      "point": "从右找升序对 → 找较大者交换 → 反转后缀",
+      "heat": 18
+    },
+    {
+      "no": "287",
+      "title": "寻找重复数",
+      "slug": "find-the-duplicate-number",
+      "diff": "M",
+      "cat": "技巧",
+      "point": "环形链表入口（快慢指针），不修改数组",
+      "heat": 20
+    }
+  ],
+  "back": [
     {
       "no": "—",
       "title": "手写并发限流器（令牌桶 / 漏桶）",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "并发设计",
+      "cat": "并发设计",
       "heat": 88,
-      "point": "令牌生成速率、桶容量、拒绝策略；能否做到无锁",
-      "gohint": "用 time.Ticker + 带缓冲 channel 最简；追问会到「突发流量怎么处理」"
+      "point": "令牌速率、桶容量、拒绝策略；能否无锁",
+      "gohint": "time.Ticker + 带缓冲 channel 最简；追问会到突发流量"
     },
     {
       "no": "—",
       "title": "生产者消费者模型",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "并发设计",
+      "cat": "并发设计",
       "heat": 80,
       "point": "channel 容量、关闭语义、优雅退出",
-      "gohint": "close 后 range 会退出；注意不要向已关闭 channel 发送"
+      "gohint": "close 后 range 会退出；不要向已关闭 channel 发送"
     },
     {
       "no": "—",
       "title": "两个 goroutine 交替打印",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "并发设计",
+      "cat": "并发设计",
       "heat": 75,
-      "point": "两个 channel 互相通知；或 sync.Cond",
-      "gohint": "无缓冲 channel 天然做同步，最简洁"
+      "point": "两个 channel 互相通知，或 sync.Cond",
+      "gohint": "无缓冲 channel 天然同步，最简洁"
     },
     {
       "no": "—",
       "title": "手写控制并发度的框架",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "并发设计",
+      "cat": "并发设计",
       "heat": 72,
       "point": "信号量 / 工作池 / errgroup 三种实现与取舍",
-      "gohint": "百度面经原题；你项目里 errgroup 限并发 5 就是现成答案"
+      "gohint": "百度面经原题；errgroup 限并发 5 就是现成答案"
     },
     {
       "no": "—",
       "title": "Redis 分布式锁",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "并发设计",
+      "cat": "并发设计",
       "heat": 68,
-      "point": "SETNX + 过期时间、续期、误删问题的解决",
-      "gohint": "解锁要校验持有者（Lua 原子性）；单机 Redis 锁的边界要讲清楚"
+      "point": "SETNX + 过期、续期、误删",
+      "gohint": "解锁要校验持有者（Lua 原子）；讲清单机锁边界"
     },
     {
       "no": "—",
       "title": "手写 LRU / TinyLFU 变体",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "设计题",
+      "cat": "设计题",
       "heat": 64,
       "point": "得物面经考过 TinyLFU；Count-Min Sketch 统计频率",
       "gohint": "先讲清 LRU 再讲 LFU 差异，别一上来堆术语"
@@ -410,52 +981,52 @@
     {
       "no": "—",
       "title": "单例模式（并发安全）",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "设计题",
+      "cat": "设计题",
       "heat": 55,
-      "point": "sync.Once / 双重检查；Go 里为什么不需要 volatile",
-      "gohint": "sync.Once 是标准答案，但要能解释为什么懒汉式不用锁"
+      "point": "sync.Once / 双重检查",
+      "gohint": "sync.Once 是标准答案，要能解释为何懒汉不用锁"
     },
     {
       "no": "—",
       "title": "一致性哈希",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "分布式",
+      "cat": "分布式",
       "heat": 52,
-      "point": "虚拟节点解决数据倾斜；节点增删时的迁移量",
-      "gohint": "排序环 + 二分查找定位；要能说清倾斜问题怎么缓解"
+      "point": "虚拟节点解决倾斜；增删节点迁移量",
+      "gohint": "排序环 + 二分定位；要能说清倾斜怎么缓解"
     },
     {
       "no": "—",
       "title": "手写简易 HTTP 路由 / 中间件",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "工程实现",
+      "cat": "工程实现",
       "heat": 48,
-      "point": "前缀树路由、middleware 链式调用",
-      "gohint": "Go 的 http.Handler 组合是加分项，能体现对 net/http 的理解"
+      "point": "前缀树路由、middleware 链",
+      "gohint": "http.Handler 组合体现对 net/http 的理解"
     },
     {
       "no": "—",
       "title": "手写对象池 / 连接池",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "工程实现",
+      "cat": "工程实现",
       "heat": 45,
       "point": "复用、超时、最大连接数、健康检查",
-      "gohint": "sync.Pool 的适用边界要讲清（不适合有状态长连接）"
+      "gohint": "sync.Pool 适用边界要讲清（不适合有状态长连接）"
     },
     {
       "no": "—",
-      "title": "Go 实现发布订阅（订阅器）",
+      "title": "Go 实现发布订阅",
+      "slug": null,
       "diff": "—",
-      "tier": "B",
-      "topic": "工程实现",
+      "cat": "工程实现",
       "heat": 42,
-      "point": "订阅表并发安全、退订、慢消费者处理",
-      "gohint": "Matrixport 三面原题；用 map + RWMutex + 每订阅者一个 channel"
+      "point": "订阅表并发安全、退订、慢消费者",
+      "gohint": "Matrixport 三面原题；map + RWMutex + 每订阅者一 channel"
     }
   ],
   "go_pitfalls": [
@@ -486,39 +1057,44 @@
   ],
   "plan": [
     {
-      "d": "Day 1-2",
-      "t": "链表专题",
-      "v": "206 / 21 / 25 / 143 / 92 / 19 / 141 / 234 —— 链表题占比最高，先全部手写一遍"
+      "d": "Day 1-3",
+      "t": "链表 14 题",
+      "v": "Hot100 里最大的专题，先吃透；146 LRU / 206 / 25 是重中之重"
     },
     {
-      "d": "Day 3-4",
-      "t": "树与 BFS/DFS",
-      "v": "102 / 103 / 104 / 236 —— 重点练「层」的处理，Go 上别用 range queue"
-    },
-    {
-      "d": "Day 5-6",
-      "t": "数组 + 双指针 + 二分",
-      "v": "15 / 56 / 42 / 153 / 215 —— 排序、去重、边界收缩是共性"
+      "d": "Day 4-6",
+      "t": "二叉树 15 题",
+      "v": "重点练层次与后序；102 层序遍历注意 Go 的 range 陷阱"
     },
     {
       "d": "Day 7-8",
-      "t": "DP 与回溯",
-      "v": "53 / 121 / 198 / 46 —— 只要 4 道，重点是能讲清状态定义"
+      "t": "哈希 / 双指针 / 滑动窗口 / 子串 12 题",
+      "v": "套路一致，多数一遍能过"
     },
     {
       "d": "Day 9-10",
-      "t": "哈希 / 栈 / 滑动窗口",
-      "v": "1 / 20 / 3 / 200 —— 巩固"
+      "t": "普通数组 / 矩阵 / 二分 / 栈 / 堆 22 题",
+      "v": "单调栈与二分边界是易错点"
     },
     {
       "d": "Day 11-12",
-      "t": "B 榜工程手撕",
-      "v": "限流器 / 生产者消费者 / 交替打印 / 并发控制框架 —— 这四项对后端岗性价比最高"
+      "t": "回溯 / 图论 12 题",
+      "v": "模板固定，重点是把状态与剪枝讲清"
     },
     {
       "d": "Day 13-14",
-      "t": "全量复盘",
-      "v": "A 榜 30 题限时手写一遍，模拟白板（不用 IDE、不自动补全）"
+      "t": "动态规划 / 多维DP / 贪心 / 技巧 23 题",
+      "v": "只需要能讲清状态定义与转移"
+    },
+    {
+      "d": "Day 15-16",
+      "t": "工程手撕 11 题",
+      "v": "限流器 / 生产者消费者 / 并发控制框架优先"
+    },
+    {
+      "d": "Day 17",
+      "t": "全量限时手写",
+      "v": "不开 IDE、不自动补全，模拟白板"
     }
   ]
 }

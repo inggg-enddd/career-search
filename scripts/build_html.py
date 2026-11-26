@@ -183,6 +183,9 @@ table.algo .ttl{font-weight:600;min-width:150px}
 table.algo .cat{color:var(--muted);white-space:nowrap;font-size:12.5px}
 table.algo .pt{line-height:1.55}
 table.algo .gh{color:var(--muted);font-size:12.5px;line-height:1.55;max-width:300px}
+.fsel{padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px}
+.heat.mute{opacity:.45}
+table.algo .gh{display:block;margin-top:3px;color:var(--muted);font-size:12px}
 .heat{display:inline-block;min-width:26px;padding:1px 6px;border-radius:6px;background:var(--soft);
   color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
 .diff{display:inline-block;min-width:18px;padding:1px 6px;border-radius:5px;font-size:11.5px;font-weight:700;border:1px solid}
@@ -293,27 +296,29 @@ goOnly.addEventListener('change',apply);
 apply();
 
 const aq=document.getElementById('aq');
-const afbtns=[...document.querySelectorAll('[data-atilevel]')];
+const acat=document.getElementById('acat');
+const ahot=document.getElementById('ahot');
 const arows=[...document.querySelectorAll('.aprob')];
 const acount=document.getElementById('acount');
-let atier='全部';
 function aapply(){
   const kw=(aq.value||'').trim().toLowerCase();
+  const c=acat?acat.value:'全部';
+  const onlyHot=ahot&&ahot.checked;
   let n=0;
   arows.forEach(el=>{
-    const okT = atier==='全部' || el.dataset.tier===atier;
+    const okC = c==='全部' || el.dataset.tier===c;
     const okK = !kw || (el.dataset.text||'').includes(kw);
-    const show = okT && okK;
+    const okH = !onlyHot || el.dataset.hot==='1';
+    const show = okC && okK && okH;
     el.style.display = show?'':'none';
     if(show) n++;
   });
-  acount.textContent = `显示 ${n} / ${arows.length} 道`;
+  acount.textContent = `显示 ${n} / ${arows.length} 题`;
 }
-afbtns.forEach(b=>b.addEventListener('click',()=>{
-  afbtns.forEach(x=>x.classList.toggle('active',x===b));
-  atier=b.dataset.atilevel; aapply();
-}));
-if(aq){ aq.addEventListener('input',aapply); aapply(); }
+if(aq){ aq.addEventListener('input',aapply); }
+if(acat){ acat.addEventListener('change',aapply); }
+if(ahot){ ahot.addEventListener('change',aapply); }
+aapply();
 
 document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.text||'';
@@ -716,42 +721,50 @@ def main():
     # module 4 —— 算法专题（公开可见）
     ameta = algo.get("meta", {})
     probs = algo.get("problems", [])
-    tiers = algo.get("tiers", [])
+    backs = algo.get("back", [])
+    cats = algo.get("cats", [])
+
+    def heat_cell(h):
+        return '<span class="heat">%s</span>' % (h if h else "—") if h else '<span class="heat mute">—</span>'
+
     page.append('<section id="tab-algo" hidden><div class="wrap">')
     page.append('<h2 class="sec">%s</h2>' % esc(ameta.get("title", "算法专题")))
     page.append('<p class="hint">%s<br><span style="opacity:.75">%s</span></p>'
                 % (esc(ameta.get("subtitle", "")), esc(ameta.get("note", ""))))
 
-    page.append('<div class="toolbar"><input id="aq" type="search" placeholder="搜索题目 / 题型…">')
-    page.append('<button class="fbtn active" data-atilevel="全部">全部</button>')
-    for t in tiers:
-        page.append('<button class="fbtn" data-atilevel="%s">%s</button>' % (esc(t["key"]), esc(t["label"])))
+    page.append('<div class="toolbar"><input id="aq" type="search" placeholder="搜索题目 / 考点…">')
+    page.append('<select id="acat" class="fsel"><option value="全部">全部分类</option>')
+    for c in cats:
+        page.append('<option value="%s">%s</option>' % (esc(c), esc(c)))
+    page.append('<option value="工程手撕">工程手撕</option></select>')
+    page.append('<label class="toggle"><input id="ahot" type="checkbox"> 只看有面经热度</label>')
     page.append('<span class="count" id="acount"></span></div>')
 
-    for t in tiers:
-        subset = [x for x in probs if x.get("tier") == t["key"]]
-        if not subset:
-            continue
-        page.append('<h3 class="subsec">%s <span>%s</span></h3>' % (esc(t["label"]), esc(t["desc"])))
-        page.append('<div class="panel tight"><table class="algo"><thead><tr>'
-                    '<th class="c">热度</th><th class="c">题号</th><th>题目</th><th class="c">难度</th>'
-                    '<th>题型</th><th>考点</th><th>Go 实现注意</th></tr></thead><tbody>')
-        for x in subset:
-            no = x.get("no", "")
-            slug = x.get("slug")
-            num = ('<a href="https://leetcode.cn/problems/%s/" target="_blank" rel="noopener">%s</a>' % (slug, no)) if slug else no
-            diff = x.get("diff", "")
-            dcls = {"E": "d-e", "M": "d-m", "H": "d-h"}.get(diff, "d-x")
-            text = (str(no) + " " + x.get("title", "") + " " + x.get("topic", "")).lower()
-            page.append('<tr class="aprob" data-tier="%s" data-text="%s">'
-                        '<td class="c"><span class="heat">%d</span></td>'
-                        '<td class="c mono">%s</td>'
-                        '<td class="ttl">%s</td>'
-                        '<td class="c"><span class="diff %s">%s</span></td>'
-                        '<td class="cat">%s</td><td class="pt">%s</td><td class="gh">%s</td></tr>'
-                        % (esc(x.get("tier")), esc(text), x.get("heat", 0), num,
-                           esc(x.get("title")), dcls, esc(diff), esc(x.get("topic")), esc(x.get("point")), esc(x.get("gohint"))))
-        page.append("</tbody></table></div>")
+    page.append('<div class="panel tight"><table class="algo"><thead><tr>'
+                '<th>分类</th><th class="c">题号</th><th>题目</th><th class="c">难度</th>'
+                '<th class="c">热度</th><th>考点</th></tr></thead><tbody>')
+    ci = {c: i for i, c in enumerate(cats)}
+    ordered = sorted(probs, key=lambda x: (ci.get(x.get("cat"), 99), -x.get("heat", 0), int(x["no"]) if x["no"].isdigit() else 0))
+    for x in ordered:
+        no = x.get("no", "")
+        slug = x.get("slug")
+        num = ('<a href="https://leetcode.cn/problems/%s/" target="_blank" rel="noopener">%s</a>' % (slug, no)) if slug else no
+        d = x.get("diff", "")
+        dcls = {"E": "d-e", "M": "d-m", "H": "d-h"}.get(d, "d-x")
+        text = (str(no) + " " + x.get("title", "") + " " + x.get("point", "") + " " + x.get("cat", "")).lower()
+        page.append('<tr class="aprob" data-tier="%s" data-hot="%d" data-text="%s">'
+                    '<td class="cat">%s</td><td class="c mono">%s</td><td class="ttl">%s</td>'
+                    '<td class="c"><span class="diff %s">%s</span></td><td class="c">%s</td><td class="pt">%s</td></tr>'
+                    % (esc(x.get("cat")), 1 if x.get("heat") else 0, esc(text),
+                       esc(x.get("cat")), num, esc(x.get("title")), dcls, esc(d), heat_cell(x.get("heat")), esc(x.get("point"))))
+    for x in backs:
+        d = x.get("diff", "—")
+        text = (x.get("title", "") + " " + x.get("point", "")).lower()
+        page.append('<tr class="aprob" data-tier="工程手撕" data-hot="1" data-text="%s">'
+                    '<td class="cat">工程手撕</td><td class="c mono">—</td><td class="ttl">%s</td>'
+                    '<td class="c"><span class="diff d-x">—</span></td><td class="c">%s</td><td class="pt">%s<br><span class="gh">Go：%s</span></td></tr>'
+                    % (esc(text), esc(x.get("title")), heat_cell(x.get("heat")), esc(x.get("point")), esc(x.get("gohint"))))
+    page.append("</tbody></table></div>")
 
     page.append('<h2 class="sec">Go 手撕的 6 个坑</h2>')
     page.append('<div class="panel"><div class="layers">')
@@ -760,9 +773,9 @@ def main():
                     % (esc(f["k"]), esc(f["v"])))
     page.append("</div></div>")
 
-    page.append('<h2 class="sec">14 天刷题计划</h2>')
+    page.append('<h2 class="sec">17 天刷题计划</h2>')
     page.append('<div class="panel tight"><table class="algo"><thead><tr>'
-                '<th class="c">阶段</th><th>主题</th><th>题单</th></tr></thead><tbody>')
+                '<th class="c">阶段</th><th>主题</th><th>怎么刷</th></tr></thead><tbody>')
     for d in algo.get("plan", []):
         page.append('<tr><td class="c mono">%s</td><td class="ttl">%s</td><td class="pt">%s</td></tr>'
                     % (esc(d["d"]), esc(d["t"]), esc(d["v"])))
