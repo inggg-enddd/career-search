@@ -2,7 +2,7 @@
   "meta": {
     "title": "Go 深度 · 学习地图",
     "subtitle": "按主题拆解运行时，每个主题给出「学到哪一步」+ 高热度文章 + 自检清单",
-    "note": "文章按「能解决什么层的问题」标注难度；链接均为公开可访问的原文或官方源码。",
+    "note": "链接优先选可直连的镜像（如 Google Docs 原文已换为 GitHub Pages 上的全文中文翻译）；标注「需代理」的为境外站点。",
     "demo": "https://github.com/inggg-enddd/career-search/tree/main/demos/gmp",
     "demo_note": "配套 3 个可运行 demo（runnext / Gosched 代价 / 异步抢占），已实测通过，输出写在 README 里"
   },
@@ -100,12 +100,13 @@
       ],
       "articles": [
         {
-          "title": "Scalable Go Scheduler Design Doc",
-          "author": "Dmitry Vyukov（Go runtime 核心作者）",
-          "url": "https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw",
-          "lang": "EN",
+          "title": "Scalable Go Scheduler Design Doc（全文中文翻译）",
+          "author": "Dmitry Vyukov · 译 matteo",
+          "url": "https://matteo-gz.github.io/posts/scalablegoschedulerdesigndoc/",
+          "lang": "中文",
           "level": "L3",
-          "why": "GMP 的设计源头。为什么要有 P、为什么用 steal，都写在这份 2012 年的文档里。读它比读十篇二手解读有用。"
+          "why": "GMP 的设计源头：为什么要有 P、为什么用 work stealing，都写在这份 2012 年的文档里。原文托管在 Google Docs（golang.org/s/go11sched 跳转），国内打不开，这里是全文中文翻译，含「当前调度器的四个问题」「Processors 设计」「自旋的两层」「实施计划」完整章节。",
+          "access": "直连"
         },
         {
           "title": "Go 语言设计与实现 · 调度器",
@@ -113,7 +114,8 @@
           "url": "https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-goroutine/",
           "lang": "中文",
           "level": "L3",
-          "why": "中文最系统的运行时分析，源码贴得克制、解释跟得上。GMP 这章按「结构体 → 调度循环 → 抢占」推进，适合作为主线阅读。"
+          "why": "中文最系统的运行时分析，源码贴得克制、解释跟得上。GMP 这章按「结构体 → 调度循环 → 抢占」推进，适合作为主线阅读。",
+          "access": "直连"
         },
         {
           "title": "The Go scheduler: Ms, Ps & Gs",
@@ -121,7 +123,8 @@
           "url": "https://povilasv.me/go-scheduler/",
           "lang": "EN",
           "level": "L1-L2",
-          "why": "图解最清晰的一篇，适合建立直觉。读完你能在白板上把 G/M/P 的关系画出来。"
+          "why": "图解最清晰的一篇，适合建立直觉。读完你能在白板上把 G/M/P 的关系画出来。",
+          "access": "直连"
         },
         {
           "title": "Scheduling In Go · Part I / Part II",
@@ -129,7 +132,8 @@
           "url": "https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part1.html",
           "lang": "EN",
           "level": "L1-L2",
-          "why": "Part I 讲操作系统调度器（为什么线程切换贵），Part II 才进 Go 调度器。先懂 OS 层，才知道 Go 在省什么。"
+          "why": "Part I 讲操作系统调度器（为什么线程切换贵），Part II 才进 Go 调度器。先懂 OS 层，才知道 Go 在省什么。",
+          "access": "直连"
         },
         {
           "title": "Analysis of the Go runtime scheduler",
@@ -137,7 +141,8 @@
           "url": "https://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf",
           "lang": "EN",
           "level": "L2-L3",
-          "why": "学术视角，把旧 GM 模型的四个问题讲得最清楚。面试被问「为什么要 P」，从这里取答案最扎实。"
+          "why": "学术视角，把旧 GM 模型的四个问题讲得最清楚。面试被问「为什么要 P」，从这里取答案最扎实。",
+          "access": "直连"
         },
         {
           "title": "Go 语言原本 · 运行时",
@@ -145,7 +150,8 @@
           "url": "https://golang.design/under-the-hood/",
           "lang": "中文",
           "level": "L3",
-          "why": "从设计哲学切入，不是简单复述源码。适合在读源码卡住时建立「为什么这样设计」的框架。"
+          "why": "从设计哲学切入，不是简单复述源码。适合在读源码卡住时建立「为什么这样设计」的框架。",
+          "access": "直连"
         },
         {
           "title": "Scheduler Tracing In Go",
@@ -153,7 +159,8 @@
           "url": "https://www.ardanlabs.com/blog/2015/02/scheduler-tracing-in-go.html",
           "lang": "EN",
           "level": "L4",
-          "why": "教你怎么用 GODEBUG=schedtrace 观测调度器。L4 的门槛不是读更多源码，是能用工具看到问题。"
+          "why": "教你怎么用 GODEBUG=schedtrace 观测调度器。L4 的门槛不是读更多源码，是能用工具看到问题。",
+          "access": "直连"
         },
         {
           "title": "runtime/proc.go 源码",
@@ -161,7 +168,8 @@
           "url": "https://github.com/golang/go/blob/master/src/runtime/proc.go",
           "lang": "源码",
           "level": "L3",
-          "why": "只看四个函数：schedule / findRunnable / runqput / sysmon。其它先跳过，避免陷进去。"
+          "why": "只看四个函数：schedule / findRunnable / runqput / sysmon。其它先跳过，避免陷进去。",
+          "access": "直连"
         },
         {
           "title": "runtime/HACKING",
@@ -169,7 +177,8 @@
           "url": "https://golang.google.cn/src/runtime/HACKING",
           "lang": "EN",
           "level": "L3",
-          "why": "官方说明 runtime 代码的约定（write barrier、nowritebarrierrec 等）。读 proc.go 之前先看这个，能少踩很多坑。"
+          "why": "官方说明 runtime 代码的约定（write barrier、nowritebarrierrec 等）。读 proc.go 之前先看这个，能少踩很多坑。",
+          "access": "直连"
         },
         {
           "title": "GMP 模型：从起源到调度场景全解析",
@@ -177,7 +186,8 @@
           "url": "https://developer.aliyun.com/article/1718625",
           "lang": "中文",
           "level": "L1-L2",
-          "why": "中文圈流传较广的入门长文，把演进历史和典型调度场景（G 阻塞、syscall、窃取）串了一遍，适合先建整体印象。"
+          "why": "中文圈流传较广的入门长文，把演进历史和典型调度场景（G 阻塞、syscall、窃取）串了一遍，适合先建整体印象。",
+          "access": "直连"
         }
       ],
       "source_paths": [

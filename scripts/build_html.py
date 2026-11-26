@@ -201,6 +201,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);f
 .art-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .art-lv{font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
 .art-lang{font-size:11px;color:var(--muted)}
+.art-px{color:var(--t1)}
 .art h5{margin:0 0 4px;font-size:14.5px;line-height:1.4}
 .art-au{font-size:12px;color:var(--brand);margin-bottom:6px}
 .art p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}
@@ -930,9 +931,11 @@ def main():
         page.append('<div class="arts">')
         for a in t.get("articles", []):
             page.append('<a class="art" href="%s" target="_blank" rel="noopener">'
-                        '<div class="art-h"><span class="art-lv">%s</span><span class="art-lang">%s</span></div>'
+                        '<div class="art-h"><span class="art-lv">%s</span><span class="art-lang">%s%s</span></div>'
                         '<h5>%s</h5><div class="art-au">%s</div><p>%s</p></a>'
-                        % (esc(a["url"]), esc(a["level"]), esc(a["lang"]), esc(a["title"]), esc(a["author"]), esc(a["why"])))
+                        % (esc(a["url"]), esc(a["level"]), esc(a["lang"]),
+                           (' · <span class="art-px">需代理</span>' if a.get("access") == "需代理" else ""),
+                           esc(a["title"]), esc(a["author"]), esc(a["why"])))
         page.append("</div>")
 
         page.append('<h3 class="subsec">源码入口 <span>只看这几个，别一头扎进去</span></h3>')
