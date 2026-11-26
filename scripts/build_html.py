@@ -169,6 +169,40 @@ h2.sec:first-child{margin-top:0}
 .note-card h4{margin:0 0 6px;font-size:14px}
 .note-card p{margin:0;font-size:13.5px;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:12.5px;background:var(--card)}
+.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.lad-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow)}
+.lad-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.lad-id{font-size:11px;font-weight:700;color:#fff;background:var(--brand);border-radius:5px;padding:1px 7px}
+.lad-nm{font-weight:650;font-size:14px}
+.lad-item p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}
+.panel.topic{margin-bottom:10px}
+.panel.topic h4{margin:0 0 8px;font-size:14px;color:var(--brand)}
+.panel.topic ul{margin:0;padding-left:18px}
+.panel.topic li{margin:4px 0;font-size:13.5px;line-height:1.65}
+.arts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.art{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+  text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:border-color .15s}
+.art:hover{border-color:var(--brand);text-decoration:none}
+.art-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.art-lv{font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.art-lang{font-size:11px;color:var(--muted)}
+.art h5{margin:0 0 4px;font-size:14.5px;line-height:1.4}
+.art-au{font-size:12px;color:var(--brand);margin-bottom:6px}
+.art p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}
+ul.src{margin:0;padding-left:18px}
+ul.src li{margin:4px 0;font-size:13px;line-height:1.6}
+.checks{display:grid;gap:7px}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.55;cursor:pointer}
+.chk input{margin-top:3px}
+.chk-progress{margin-top:12px;font-size:12.5px;color:var(--muted)}
+details.qa{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:7px}
+details.qa summary{cursor:pointer;font-size:13.5px;font-weight:600}
+details.qa p{margin:8px 0 0;font-size:13px;color:var(--muted);line-height:1.65}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.rm{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+.rm-s{font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
+.rm b{display:block;margin:6px 0 3px;font-size:13.5px}
+.rm p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
 .subsec{margin:26px 0 10px;font-size:15px;font-weight:650}
 .subsec span{font-weight:400;font-size:12.5px;color:var(--muted);margin-left:8px}
 table.algo{width:100%;border-collapse:collapse;font-size:13px}
@@ -255,6 +289,7 @@ const tabs=[...document.querySelectorAll('.tabbar button')];
 const secs={list:document.getElementById('tab-list'),req:document.getElementById('tab-req')};
 const _rs=document.getElementById('tab-resume'); if(_rs) secs.resume=_rs;
 const _al=document.getElementById('tab-algo'); if(_al) secs.algo=_al;
+const _go=document.getElementById('tab-go'); if(_go) secs.go=_go;
 function showTab(name,scroll){
   const b=tabs.find(x=>x.dataset.tab===name)||tabs[0];
   tabs.forEach(x=>x.classList.toggle('active',x===b));
@@ -266,7 +301,7 @@ tabs.forEach(b=>b.addEventListener('click',()=>{
   history.replaceState(null,'','#'+b.dataset.tab);
 }));
 const H=((location.hash||'').replace('#',''));
-showTab(['list','req','algo','resume'].includes(H)?H:'list',false);
+showTab(['list','req','algo','go','resume'].includes(H)?H:'list',false);
 
 const q=document.getElementById('q');
 const goOnly=document.getElementById('goOnly');
@@ -319,6 +354,23 @@ if(aq){ aq.addEventListener('input',aapply); }
 if(acat){ acat.addEventListener('change',aapply); }
 if(ahot){ ahot.addEventListener('change',aapply); }
 aapply();
+
+(function(){
+  const KEY='dsh.go.checklist';
+  const boxes=[...document.querySelectorAll('#gocheck input[data-k]')];
+  const prog=document.getElementById('goprog');
+  let saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ saved={}; }
+  boxes.forEach(b=>{ if(saved[b.dataset.k]) b.checked=true; });
+  function upd(){
+    const n=boxes.filter(b=>b.checked).length;
+    if(prog) prog.textContent=`已完成 ${n} / ${boxes.length}`;
+    const obj={}; boxes.forEach(b=>{ if(b.checked) obj[b.dataset.k]=1; });
+    try{ localStorage.setItem(KEY,JSON.stringify(obj)); }catch(e){}
+  }
+  boxes.forEach(b=>b.addEventListener('change',upd));
+  upd();
+})();
 
 document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.text||'';
@@ -540,6 +592,7 @@ def main():
     profile = load("profile.json")
     with_resume = "--with-resume" in sys.argv
     algo = load("algo.json")
+    godoc = load("go.json")
     resume = load("resume.json") if (with_resume and (DATA / "resume.json").exists()) else {"projects": []}
     levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
@@ -592,8 +645,9 @@ def main():
     page.append('<button class="active" data-tab="list">① 职位列表</button>')
     page.append('<button data-tab="req">② 技能要求</button>')
     page.append('<button data-tab="algo">③ 算法专题</button>')
+    page.append('<button data-tab="go">④ Go 深度</button>')
     if resume.get("projects"):
-        page.append('<button data-tab="resume">④ 总简历能力池</button>')
+        page.append('<button data-tab="resume">⑤ 总简历能力池</button>')
     page.append("</div></div></nav><main>")
 
     # module 1
@@ -780,6 +834,67 @@ def main():
         page.append('<tr><td class="c mono">%s</td><td class="ttl">%s</td><td class="pt">%s</td></tr>'
                     % (esc(d["d"]), esc(d["t"]), esc(d["v"])))
     page.append("</tbody></table></div>")
+    page.append("</div></section>")
+
+    # module 5 —— Go 深度（公开可见）
+    gmeta = godoc.get("meta", {})
+    topics = godoc.get("topics", [])
+    page.append('<section id="tab-go" hidden><div class="wrap">')
+    page.append('<h2 class="sec">%s</h2>' % esc(gmeta.get("title", "Go 深度")))
+    page.append('<p class="hint">%s<br><span style="opacity:.75">%s</span></p>'
+                % (esc(gmeta.get("subtitle", "")), esc(gmeta.get("note", ""))))
+
+    page.append('<h2 class="sec">学习阶梯：到哪一步算学会了</h2>')
+    page.append('<div class="ladder">')
+    for i, lv in enumerate(godoc.get("levels", []), 1):
+        page.append('<div class="lad-item"><div class="lad-top"><span class="lad-id">%s</span>'
+                    '<span class="lad-nm">%s</span></div><p>%s</p></div>'
+                    % (esc(lv["id"]), esc(lv["name"]), esc(lv["desc"])))
+    page.append("</div>")
+
+    for t in topics:
+        page.append('<h2 class="sec">%s</h2>' % esc(t["name"]))
+        page.append('<p class="hint">%s<br><b>目标：</b>%s</p>' % (esc(t.get("tagline", "")), esc(t.get("target", ""))))
+
+        page.append('<h3 class="subsec">核心总结</h3>')
+        for sec in t.get("sections", []):
+            page.append('<div class="panel topic"><h4>%s</h4><ul>' % esc(sec["h"]))
+            for pt in sec["points"]:
+                page.append("<li>%s</li>" % esc(pt))
+            page.append("</ul></div>")
+
+        page.append('<h3 class="subsec">推荐阅读 <span>共 %d 篇，按「先建立直觉、再读源码」排序</span></h3>' % len(t.get("articles", [])))
+        page.append('<div class="arts">')
+        for a in t.get("articles", []):
+            page.append('<a class="art" href="%s" target="_blank" rel="noopener">'
+                        '<div class="art-h"><span class="art-lv">%s</span><span class="art-lang">%s</span></div>'
+                        '<h5>%s</h5><div class="art-au">%s</div><p>%s</p></a>'
+                        % (esc(a["url"]), esc(a["level"]), esc(a["lang"]), esc(a["title"]), esc(a["author"]), esc(a["why"])))
+        page.append("</div>")
+
+        page.append('<h3 class="subsec">源码入口 <span>只看这几个，别一头扎进去</span></h3>')
+        page.append('<div class="panel"><ul class="src">')
+        for sp in t.get("source_paths", []):
+            page.append("<li>%s</li>" % esc(sp))
+        page.append("</ul></div>")
+
+        page.append('<h3 class="subsec">自检清单 <span>能全部打勾，就算到 L3</span></h3>')
+        page.append('<div class="panel"><div class="checks" id="gocheck">')
+        for i, c in enumerate(t.get("checklist", [])):
+            page.append('<label class="chk"><input type="checkbox" data-k="go-%s-%d"><span>%s</span></label>'
+                        % (esc(t["id"]), i, esc(c)))
+        page.append('</div><div class="chk-progress" id="goprog"></div></div>')
+
+        page.append('<h3 class="subsec">高频追问 <span>点开看答题要点</span></h3>')
+        for qa in t.get("followups", []):
+            page.append('<details class="qa"><summary>%s</summary><p>%s</p></details>' % (esc(qa["q"]), esc(qa["a"])))
+
+    page.append('<h2 class="sec">后续主题路线</h2>')
+    page.append('<div class="roadmap">')
+    for r in godoc.get("roadmap", []):
+        page.append('<div class="rm"><span class="rm-s">%s</span><b>%s</b><p>%s</p></div>'
+                    % (esc(r["status"]), esc(r["name"]), esc(r["why"])))
+    page.append("</div>")
     page.append("</div></section>")
 
     # module 3 —— 总简历能力池（仅本地构建，不进公开页）
