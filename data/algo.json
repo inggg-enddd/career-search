@@ -1,0 +1,524 @@
+{
+  "meta": {
+    "title": "算法专题 · 高频手撕题单",
+    "subtitle": "A 榜 30 道 LeetCode 原题 + B 榜 11 道后端工程手撕，按面经出现热度排序",
+    "note": "热度为多源面经频次归一化后的相对值（0-100），用于排序，不代表命中概率。数据源：CodeTop 综合排序、字节 1727 篇面经统计、2025.4-2026.4 面经汇总。",
+    "updated": "2026-11-26"
+  },
+  "tiers": [
+    {
+      "key": "P0",
+      "label": "P0 · 必刷",
+      "desc": "写不出来基本等于挂，先吃透这 10 道"
+    },
+    {
+      "key": "P1",
+      "label": "P1 · 高频",
+      "desc": "进二面后大概率遇到，覆盖后命中率显著提升"
+    },
+    {
+      "key": "P2",
+      "label": "P2 · 补充",
+      "desc": "补题型盲区，有余力再刷"
+    },
+    {
+      "key": "B",
+      "label": "B 榜 · 工程手撕",
+      "desc": "不在 LeetCode 题库里，但后端岗专考，性价比不低于 A 榜"
+    }
+  ],
+  "problems": [
+    {
+      "no": "3",
+      "title": "无重复字符的最长子串",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "滑动窗口",
+      "heat": 100,
+      "point": "窗口收缩的判定条件；right 指针不回退",
+      "gohint": "用 byte/[]rune 区分 ASCII 与中文；map[rune]int 记位置比记 bool 更省一次内循环",
+      "slug": "longest-substring-without-repeating-characters"
+    },
+    {
+      "no": "146",
+      "title": "LRU 缓存机制",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "设计题",
+      "heat": 98,
+      "point": "哈希表 + 双向链表，get/put 都要 O(1)",
+      "gohint": "Go 用 container/list 或手写哨兵双向链表；面试更想看手写，纯 list 会被追问实现",
+      "slug": "lru-cache"
+    },
+    {
+      "no": "206",
+      "title": "反转链表",
+      "diff": "E",
+      "tier": "P0",
+      "topic": "链表",
+      "heat": 95,
+      "point": "迭代三指针；递归写法要能说清栈深度",
+      "gohint": "先判断 head == nil；递归版注意栈溢出",
+      "slug": "reverse-linked-list"
+    },
+    {
+      "no": "215",
+      "title": "数组中的第 K 个最大元素",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "堆 / 快速选择",
+      "heat": 92,
+      "point": "小顶堆 or 快选；复杂度分别 O(nlogk) / 期望 O(n)",
+      "gohint": "用 Go 建堆时 container/heap 要满足接口，面试常要求手写 siftDown",
+      "slug": "kth-largest-element-in-an-array"
+    },
+    {
+      "no": "25",
+      "title": "K 个一组翻转链表",
+      "diff": "H",
+      "tier": "P0",
+      "topic": "链表",
+      "heat": 88,
+      "point": "分组翻转 + 不足 K 保持原序；边界处理",
+      "gohint": "先统计长度能省掉每次探测；注意 nil 组的返回",
+      "slug": "reverse-nodes-in-k-group"
+    },
+    {
+      "no": "15",
+      "title": "三数之和",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "双指针",
+      "heat": 85,
+      "point": "排序后双指针 + 两层去重",
+      "gohint": "去重要写对：外层跳过重复、内层跳过重复，漏一个就出重复解",
+      "slug": "3sum"
+    },
+    {
+      "no": "53",
+      "title": "最大子数组和",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "DP / 贪心",
+      "heat": 82,
+      "point": "状态定义与转移；能否给出空间 O(1)",
+      "gohint": "用 cur/max 两个变量代替 dp 数组",
+      "slug": "maximum-subarray"
+    },
+    {
+      "no": "56",
+      "title": "合并区间",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "排序 / 区间",
+      "heat": 80,
+      "point": "按左端点排序后一次扫描",
+      "gohint": "结果切片 append 时注意别复用底层数组",
+      "slug": "merge-intervals"
+    },
+    {
+      "no": "102",
+      "title": "二叉树的层序遍历",
+      "diff": "M",
+      "tier": "P0",
+      "topic": "BFS",
+      "heat": 78,
+      "point": "逐层收集，区分层边界",
+      "gohint": "别写 for range queue——range 是对切片副本迭代，边遍历边 append 会把下一层混进来；先记 l := len(queue)",
+      "slug": "binary-tree-level-order-traversal"
+    },
+    {
+      "no": "21",
+      "title": "合并两个有序链表",
+      "diff": "E",
+      "tier": "P0",
+      "topic": "链表",
+      "heat": 76,
+      "point": "哨兵节点简化头部分支",
+      "gohint": "用 dummy 节点能省掉一堆 nil 判断",
+      "slug": "merge-two-sorted-lists"
+    },
+    {
+      "no": "121",
+      "title": "买卖股票的最佳时机",
+      "diff": "E",
+      "tier": "P1",
+      "topic": "贪心 / DP",
+      "heat": 72,
+      "point": "维护历史最低价，一次遍历",
+      "gohint": "空数组要返回 0",
+      "slug": "best-time-to-buy-and-sell-stock"
+    },
+    {
+      "no": "200",
+      "title": "岛屿数量",
+      "diff": "M",
+      "tier": "P1",
+      "topic": "DFS / BFS",
+      "heat": 70,
+      "point": "沉岛法；递归深度与栈溢出",
+      "gohint": "大矩阵递归可能爆栈，面试可主动提 BFS 或并查集替代",
+      "slug": "number-of-islands"
+    },
+    {
+      "no": "46",
+      "title": "全排列",
+      "diff": "M",
+      "tier": "P1",
+      "topic": "回溯",
+      "heat": 68,
+      "point": "used 数组 + 撤销选择",
+      "gohint": "path 要 copy 后再 append 到结果，否则全是同一个切片",
+      "slug": "permutations"
+    },
+    {
+      "no": "20",
+      "title": "有效的括号",
+      "diff": "E",
+      "tier": "P1",
+      "topic": "栈",
+      "heat": 66,
+      "point": "左入栈、右匹配；最后栈空",
+      "gohint": "奇数长度直接 false；用 []rune 处理",
+      "slug": "valid-parentheses"
+    },
+    {
+      "no": "153",
+      "title": "寻找旋转排序数组中的最小值",
+      "diff": "M",
+      "tier": "P1",
+      "topic": "二分",
+      "heat": 64,
+      "point": "与右端点比较决定收缩方向",
+      "gohint": "循环条件 left < right，返回 nums[left]",
+      "slug": "find-minimum-in-rotated-sorted-array"
+    },
+    {
+      "no": "143",
+      "title": "重排链表",
+      "diff": "M",
+      "tier": "P1",
+      "topic": "链表 + 双指针",
+      "heat": 62,
+      "point": "找中点 → 反转后半 → 合并",
+      "gohint": "三步各是一个独立子题，可拆开讲",
+      "slug": "reorder-list"
+    },
+    {
+      "no": "198",
+      "title": "打家劫舍",
+      "diff": "M",
+      "tier": "P1",
+      "topic": "DP",
+      "heat": 60,
+      "point": "相邻不能选；滚动变量优化",
+      "gohint": "边界 n==0/1",
+      "slug": "house-robber"
+    },
+    {
+      "no": "1",
+      "title": "两数之和",
+      "diff": "E",
+      "tier": "P1",
+      "topic": "哈希",
+      "heat": 58,
+      "point": "边遍历边查表，避免同一元素用两次",
+      "gohint": "返回下标不是值",
+      "slug": "two-sum"
+    },
+    {
+      "no": "42",
+      "title": "接雨水",
+      "diff": "H",
+      "tier": "P1",
+      "topic": "双指针 / 单调栈",
+      "heat": 56,
+      "point": "左右最大值取小；或单调栈按层算",
+      "gohint": "双指针空间 O(1)，比 DP 数组更能体现水平",
+      "slug": "trapping-rain-water"
+    },
+    {
+      "no": "160",
+      "title": "相交链表",
+      "diff": "E",
+      "tier": "P1",
+      "topic": "双指针",
+      "heat": 54,
+      "point": "走完自己走对方，两轮必相遇",
+      "gohint": "无交点时同时为 nil，循环条件写 a != b",
+      "slug": "intersection-of-two-linked-lists"
+    },
+    {
+      "no": "103",
+      "title": "二叉树的锯齿形层序遍历",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "BFS",
+      "heat": 50,
+      "point": "层序基础上按层序奇偶决定插入方向",
+      "gohint": "可用双端队列或插入时反转当前层",
+      "slug": "binary-tree-zigzag-level-order-traversal"
+    },
+    {
+      "no": "236",
+      "title": "二叉树的最近公共祖先",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "树 / 递归",
+      "heat": 48,
+      "point": "后序遍历，左右各自找到即当前为 LCA",
+      "gohint": "注意 p/q 可能是对方祖先的情况",
+      "slug": "lowest-common-ancestor-of-a-binary-tree"
+    },
+    {
+      "no": "92",
+      "title": "反转链表 II",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "链表",
+      "heat": 46,
+      "point": "定位到 m-1，局部反转后接回",
+      "gohint": "用 dummy 处理 m==1",
+      "slug": "reverse-linked-list-ii"
+    },
+    {
+      "no": "54",
+      "title": "螺旋矩阵",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "模拟",
+      "heat": 44,
+      "point": "四条边界收缩，注意重复访问",
+      "gohint": "循环里每走完一条边要判断边界是否越界",
+      "slug": "spiral-matrix"
+    },
+    {
+      "no": "5",
+      "title": "最长回文子串",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "DP / 中心扩展",
+      "heat": 42,
+      "point": "中心扩展更省空间；DP 要说清状态",
+      "gohint": "奇偶两种中心都要扩展",
+      "slug": "longest-palindromic-substring"
+    },
+    {
+      "no": "19",
+      "title": "删除链表的倒数第 N 个节点",
+      "diff": "M",
+      "tier": "P2",
+      "topic": "快慢指针",
+      "heat": 40,
+      "point": "快指针先走 N，再同步走",
+      "gohint": "用 dummy 处理删除头节点",
+      "slug": "remove-nth-node-from-end-of-list"
+    },
+    {
+      "no": "141",
+      "title": "环形链表",
+      "diff": "E",
+      "tier": "P2",
+      "topic": "快慢指针",
+      "heat": 38,
+      "point": "快走两步慢走一步，相遇即有环",
+      "gohint": "循环条件 fast != nil && fast.Next != nil",
+      "slug": "linked-list-cycle"
+    },
+    {
+      "no": "234",
+      "title": "回文链表",
+      "diff": "E",
+      "tier": "P2",
+      "topic": "链表",
+      "heat": 36,
+      "point": "找中点 + 反转后半 + 比较",
+      "gohint": "可提「是否允许修改原链表」这个追问",
+      "slug": "palindrome-linked-list"
+    },
+    {
+      "no": "104",
+      "title": "二叉树的最大深度",
+      "diff": "E",
+      "tier": "P2",
+      "topic": "DFS",
+      "heat": 34,
+      "point": "递归取左右最大 +1",
+      "gohint": "空树返回 0",
+      "slug": "maximum-depth-of-binary-tree"
+    },
+    {
+      "no": "—",
+      "title": "手写并发限流器（令牌桶 / 漏桶）",
+      "diff": "—",
+      "tier": "B",
+      "topic": "并发设计",
+      "heat": 88,
+      "point": "令牌生成速率、桶容量、拒绝策略；能否做到无锁",
+      "gohint": "用 time.Ticker + 带缓冲 channel 最简；追问会到「突发流量怎么处理」"
+    },
+    {
+      "no": "—",
+      "title": "生产者消费者模型",
+      "diff": "—",
+      "tier": "B",
+      "topic": "并发设计",
+      "heat": 80,
+      "point": "channel 容量、关闭语义、优雅退出",
+      "gohint": "close 后 range 会退出；注意不要向已关闭 channel 发送"
+    },
+    {
+      "no": "—",
+      "title": "两个 goroutine 交替打印",
+      "diff": "—",
+      "tier": "B",
+      "topic": "并发设计",
+      "heat": 75,
+      "point": "两个 channel 互相通知；或 sync.Cond",
+      "gohint": "无缓冲 channel 天然做同步，最简洁"
+    },
+    {
+      "no": "—",
+      "title": "手写控制并发度的框架",
+      "diff": "—",
+      "tier": "B",
+      "topic": "并发设计",
+      "heat": 72,
+      "point": "信号量 / 工作池 / errgroup 三种实现与取舍",
+      "gohint": "百度面经原题；你项目里 errgroup 限并发 5 就是现成答案"
+    },
+    {
+      "no": "—",
+      "title": "Redis 分布式锁",
+      "diff": "—",
+      "tier": "B",
+      "topic": "并发设计",
+      "heat": 68,
+      "point": "SETNX + 过期时间、续期、误删问题的解决",
+      "gohint": "解锁要校验持有者（Lua 原子性）；单机 Redis 锁的边界要讲清楚"
+    },
+    {
+      "no": "—",
+      "title": "手写 LRU / TinyLFU 变体",
+      "diff": "—",
+      "tier": "B",
+      "topic": "设计题",
+      "heat": 64,
+      "point": "得物面经考过 TinyLFU；Count-Min Sketch 统计频率",
+      "gohint": "先讲清 LRU 再讲 LFU 差异，别一上来堆术语"
+    },
+    {
+      "no": "—",
+      "title": "单例模式（并发安全）",
+      "diff": "—",
+      "tier": "B",
+      "topic": "设计题",
+      "heat": 55,
+      "point": "sync.Once / 双重检查；Go 里为什么不需要 volatile",
+      "gohint": "sync.Once 是标准答案，但要能解释为什么懒汉式不用锁"
+    },
+    {
+      "no": "—",
+      "title": "一致性哈希",
+      "diff": "—",
+      "tier": "B",
+      "topic": "分布式",
+      "heat": 52,
+      "point": "虚拟节点解决数据倾斜；节点增删时的迁移量",
+      "gohint": "排序环 + 二分查找定位；要能说清倾斜问题怎么缓解"
+    },
+    {
+      "no": "—",
+      "title": "手写简易 HTTP 路由 / 中间件",
+      "diff": "—",
+      "tier": "B",
+      "topic": "工程实现",
+      "heat": 48,
+      "point": "前缀树路由、middleware 链式调用",
+      "gohint": "Go 的 http.Handler 组合是加分项，能体现对 net/http 的理解"
+    },
+    {
+      "no": "—",
+      "title": "手写对象池 / 连接池",
+      "diff": "—",
+      "tier": "B",
+      "topic": "工程实现",
+      "heat": 45,
+      "point": "复用、超时、最大连接数、健康检查",
+      "gohint": "sync.Pool 的适用边界要讲清（不适合有状态长连接）"
+    },
+    {
+      "no": "—",
+      "title": "Go 实现发布订阅（订阅器）",
+      "diff": "—",
+      "tier": "B",
+      "topic": "工程实现",
+      "heat": 42,
+      "point": "订阅表并发安全、退订、慢消费者处理",
+      "gohint": "Matrixport 三面原题；用 map + RWMutex + 每订阅者一个 channel"
+    }
+  ],
+  "go_pitfalls": [
+    {
+      "k": "range 切片是副本",
+      "v": "层序遍历写 for range queue 会把下一层混进来。这也是 Go 岗最容易暴露基本功的一处。"
+    },
+    {
+      "k": "pivot 不能固定取中间",
+      "v": "快排用中间索引做 pivot，遇到有序数组会退化到 O(n²)。要能说出随机化或三数中。"
+    },
+    {
+      "k": "nil 与空输入",
+      "v": "面试官第一眼就看有没有处理 nil / 空数组 / 单节点。"
+    },
+    {
+      "k": "切片共享底层数组",
+      "v": "append 后再切片、以及把局部切片存进结果集，都可能互相覆盖。"
+    },
+    {
+      "k": "map 并发写直接 panic",
+      "v": "这是 Go 的高频追问点，也是你做长连接推送时真正踩过的场景。"
+    },
+    {
+      "k": "字节是 ACM 模式",
+      "v": "面经统计里字节手撕是 ACM 模式，要自己写 main 读输入，不是白板写函数。"
+    }
+  ],
+  "plan": [
+    {
+      "d": "Day 1-2",
+      "t": "链表专题",
+      "v": "206 / 21 / 25 / 143 / 92 / 19 / 141 / 234 —— 链表题占比最高，先全部手写一遍"
+    },
+    {
+      "d": "Day 3-4",
+      "t": "树与 BFS/DFS",
+      "v": "102 / 103 / 104 / 236 —— 重点练「层」的处理，Go 上别用 range queue"
+    },
+    {
+      "d": "Day 5-6",
+      "t": "数组 + 双指针 + 二分",
+      "v": "15 / 56 / 42 / 153 / 215 —— 排序、去重、边界收缩是共性"
+    },
+    {
+      "d": "Day 7-8",
+      "t": "DP 与回溯",
+      "v": "53 / 121 / 198 / 46 —— 只要 4 道，重点是能讲清状态定义"
+    },
+    {
+      "d": "Day 9-10",
+      "t": "哈希 / 栈 / 滑动窗口",
+      "v": "1 / 20 / 3 / 200 —— 巩固"
+    },
+    {
+      "d": "Day 11-12",
+      "t": "B 榜工程手撕",
+      "v": "限流器 / 生产者消费者 / 交替打印 / 并发控制框架 —— 这四项对后端岗性价比最高"
+    },
+    {
+      "d": "Day 13-14",
+      "t": "全量复盘",
+      "v": "A 榜 30 题限时手写一遍，模拟白板（不用 IDE、不自动补全）"
+    }
+  ]
+}

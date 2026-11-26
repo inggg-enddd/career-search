@@ -169,6 +169,27 @@ h2.sec:first-child{margin-top:0}
 .note-card h4{margin:0 0 6px;font-size:14px}
 .note-card p{margin:0;font-size:13.5px;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:12.5px;background:var(--card)}
+.subsec{margin:26px 0 10px;font-size:15px;font-weight:650}
+.subsec span{font-weight:400;font-size:12.5px;color:var(--muted);margin-left:8px}
+table.algo{width:100%;border-collapse:collapse;font-size:13px}
+table.algo th{text-align:left;font-size:11.5px;letter-spacing:.02em;color:var(--muted);
+  font-weight:700;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.algo td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.algo tr:last-child td{border-bottom:0}
+table.algo tbody tr:hover{background:var(--soft)}
+table.algo .c{text-align:center}
+table.algo .mono{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+table.algo .ttl{font-weight:600;min-width:150px}
+table.algo .cat{color:var(--muted);white-space:nowrap;font-size:12.5px}
+table.algo .pt{line-height:1.55}
+table.algo .gh{color:var(--muted);font-size:12.5px;line-height:1.55;max-width:300px}
+.heat{display:inline-block;min-width:26px;padding:1px 6px;border-radius:6px;background:var(--soft);
+  color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+.diff{display:inline-block;min-width:18px;padding:1px 6px;border-radius:5px;font-size:11.5px;font-weight:700;border:1px solid}
+.d-e{color:#059669;border-color:#059669}
+.d-m{color:#d97706;border-color:#d97706}
+.d-h{color:#b91c1c;border-color:#b91c1c}
+.d-x{color:var(--muted);border-color:var(--line)}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 14px;line-height:1.6}
 .hint b{color:var(--ink);font-weight:600}
 .panel.tight{padding:6px 0;overflow-x:auto}
@@ -230,6 +251,7 @@ JS = """
 const tabs=[...document.querySelectorAll('.tabbar button')];
 const secs={list:document.getElementById('tab-list'),req:document.getElementById('tab-req')};
 const _rs=document.getElementById('tab-resume'); if(_rs) secs.resume=_rs;
+const _al=document.getElementById('tab-algo'); if(_al) secs.algo=_al;
 function showTab(name,scroll){
   const b=tabs.find(x=>x.dataset.tab===name)||tabs[0];
   tabs.forEach(x=>x.classList.toggle('active',x===b));
@@ -241,7 +263,7 @@ tabs.forEach(b=>b.addEventListener('click',()=>{
   history.replaceState(null,'','#'+b.dataset.tab);
 }));
 const H=((location.hash||'').replace('#',''));
-showTab(['list','req','resume'].includes(H)?H:'list',false);
+showTab(['list','req','algo','resume'].includes(H)?H:'list',false);
 
 const q=document.getElementById('q');
 const goOnly=document.getElementById('goOnly');
@@ -269,6 +291,29 @@ fbtns.forEach(b=>b.addEventListener('click',()=>{
 q.addEventListener('input',apply);
 goOnly.addEventListener('change',apply);
 apply();
+
+const aq=document.getElementById('aq');
+const afbtns=[...document.querySelectorAll('[data-atilevel]')];
+const arows=[...document.querySelectorAll('.aprob')];
+const acount=document.getElementById('acount');
+let atier='全部';
+function aapply(){
+  const kw=(aq.value||'').trim().toLowerCase();
+  let n=0;
+  arows.forEach(el=>{
+    const okT = atier==='全部' || el.dataset.tier===atier;
+    const okK = !kw || (el.dataset.text||'').includes(kw);
+    const show = okT && okK;
+    el.style.display = show?'':'none';
+    if(show) n++;
+  });
+  acount.textContent = `显示 ${n} / ${arows.length} 道`;
+}
+afbtns.forEach(b=>b.addEventListener('click',()=>{
+  afbtns.forEach(x=>x.classList.toggle('active',x===b));
+  atier=b.dataset.atilevel; aapply();
+}));
+if(aq){ aq.addEventListener('input',aapply); aapply(); }
 
 document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.text||'';
@@ -489,6 +534,7 @@ def main():
     apps_doc = load("applications.json")
     profile = load("profile.json")
     with_resume = "--with-resume" in sys.argv
+    algo = load("algo.json")
     resume = load("resume.json") if (with_resume and (DATA / "resume.json").exists()) else {"projects": []}
     levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
@@ -540,8 +586,9 @@ def main():
     page.append('<nav class="tabs"><div class="wrap"><div class="tabbar">')
     page.append('<button class="active" data-tab="list">① 职位列表</button>')
     page.append('<button data-tab="req">② 技能要求</button>')
+    page.append('<button data-tab="algo">③ 算法专题</button>')
     if resume.get("projects"):
-        page.append('<button data-tab="resume">③ 总简历能力池</button>')
+        page.append('<button data-tab="resume">④ 总简历能力池</button>')
     page.append("</div></div></nav><main>")
 
     # module 1
@@ -664,6 +711,62 @@ def main():
         page.append('<div class="note-card"><h4>%s</h4><p>%s</p></div>' % (esc(h), esc(p_)))
     page.append("</div>")
 
+    page.append("</div></section>")
+
+    # module 4 —— 算法专题（公开可见）
+    ameta = algo.get("meta", {})
+    probs = algo.get("problems", [])
+    tiers = algo.get("tiers", [])
+    page.append('<section id="tab-algo" hidden><div class="wrap">')
+    page.append('<h2 class="sec">%s</h2>' % esc(ameta.get("title", "算法专题")))
+    page.append('<p class="hint">%s<br><span style="opacity:.75">%s</span></p>'
+                % (esc(ameta.get("subtitle", "")), esc(ameta.get("note", ""))))
+
+    page.append('<div class="toolbar"><input id="aq" type="search" placeholder="搜索题目 / 题型…">')
+    page.append('<button class="fbtn active" data-atilevel="全部">全部</button>')
+    for t in tiers:
+        page.append('<button class="fbtn" data-atilevel="%s">%s</button>' % (esc(t["key"]), esc(t["label"])))
+    page.append('<span class="count" id="acount"></span></div>')
+
+    for t in tiers:
+        subset = [x for x in probs if x.get("tier") == t["key"]]
+        if not subset:
+            continue
+        page.append('<h3 class="subsec">%s <span>%s</span></h3>' % (esc(t["label"]), esc(t["desc"])))
+        page.append('<div class="panel tight"><table class="algo"><thead><tr>'
+                    '<th class="c">热度</th><th class="c">题号</th><th>题目</th><th class="c">难度</th>'
+                    '<th>题型</th><th>考点</th><th>Go 实现注意</th></tr></thead><tbody>')
+        for x in subset:
+            no = x.get("no", "")
+            slug = x.get("slug")
+            num = ('<a href="https://leetcode.cn/problems/%s/" target="_blank" rel="noopener">%s</a>' % (slug, no)) if slug else no
+            diff = x.get("diff", "")
+            dcls = {"E": "d-e", "M": "d-m", "H": "d-h"}.get(diff, "d-x")
+            text = (str(no) + " " + x.get("title", "") + " " + x.get("topic", "")).lower()
+            page.append('<tr class="aprob" data-tier="%s" data-text="%s">'
+                        '<td class="c"><span class="heat">%d</span></td>'
+                        '<td class="c mono">%s</td>'
+                        '<td class="ttl">%s</td>'
+                        '<td class="c"><span class="diff %s">%s</span></td>'
+                        '<td class="cat">%s</td><td class="pt">%s</td><td class="gh">%s</td></tr>'
+                        % (esc(x.get("tier")), esc(text), x.get("heat", 0), num,
+                           esc(x.get("title")), dcls, esc(diff), esc(x.get("topic")), esc(x.get("point")), esc(x.get("gohint"))))
+        page.append("</tbody></table></div>")
+
+    page.append('<h2 class="sec">Go 手撕的 6 个坑</h2>')
+    page.append('<div class="panel"><div class="layers">')
+    for f in algo.get("go_pitfalls", []):
+        page.append('<div class="layer"><span class="k">%s</span><span class="v">%s</span></div>'
+                    % (esc(f["k"]), esc(f["v"])))
+    page.append("</div></div>")
+
+    page.append('<h2 class="sec">14 天刷题计划</h2>')
+    page.append('<div class="panel tight"><table class="algo"><thead><tr>'
+                '<th class="c">阶段</th><th>主题</th><th>题单</th></tr></thead><tbody>')
+    for d in algo.get("plan", []):
+        page.append('<tr><td class="c mono">%s</td><td class="ttl">%s</td><td class="pt">%s</td></tr>'
+                    % (esc(d["d"]), esc(d["t"]), esc(d["v"])))
+    page.append("</tbody></table></div>")
     page.append("</div></section>")
 
     # module 3 —— 总简历能力池（仅本地构建，不进公开页）
