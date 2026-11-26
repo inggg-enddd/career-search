@@ -2,7 +2,9 @@
   "meta": {
     "title": "Go 深度 · 学习地图",
     "subtitle": "按主题拆解运行时，每个主题给出「学到哪一步」+ 高热度文章 + 自检清单",
-    "note": "文章按「能解决什么层的问题」标注难度；链接均为公开可访问的原文或官方源码。"
+    "note": "文章按「能解决什么层的问题」标注难度；链接均为公开可访问的原文或官方源码。",
+    "demo": "https://github.com/inggg-enddd/career-search/tree/main/demos/gmp",
+    "demo_note": "配套 3 个可运行 demo（runnext / Gosched 代价 / 异步抢占），已实测通过，输出写在 README 里"
   },
   "levels": [
     {

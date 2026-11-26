@@ -3,3 +3,5 @@
 __pycache__/
 data/resume.json
 index.local.html
+demos/gmp/*/preempt_demo
+demos/gmp/*/demo

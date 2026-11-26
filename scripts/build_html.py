@@ -169,6 +169,21 @@ h2.sec:first-child{margin-top:0}
 .note-card h4{margin:0 0 6px;font-size:14px}
 .note-card p{margin:0;font-size:13.5px;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:12.5px;background:var(--card)}
+.flash{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.flash-top{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.fbar{flex:1;height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
+.fbar i{display:block;height:100%;background:var(--brand);width:0;transition:width .25s}
+.flash-card{border:1px solid var(--line);border-radius:10px;padding:22px 24px;background:var(--bg);min-height:150px}
+.f-cat{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:none;margin-bottom:10px}
+.f-q{font-size:16.5px;font-weight:650;line-height:1.55}
+.f-a{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:14px;line-height:1.75;color:var(--ink)}
+.flash-actions{display:flex;gap:10px;margin-top:14px}
+.flash-actions button{padding:8px 16px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer}
+.flash-actions .btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:600}
+.flash-actions .btn-ok{color:var(--t0);border-color:var(--t0);font-weight:600}
+.flash-actions .btn-ghost{color:var(--muted)}
+.flash-opts{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.btn-link{background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer;text-decoration:underline}
 .ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .lad-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow)}
 .lad-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
@@ -354,6 +369,49 @@ if(aq){ aq.addEventListener('input',aapply); }
 if(acat){ acat.addEventListener('change',aapply); }
 if(ahot){ ahot.addEventListener('change',aapply); }
 aapply();
+
+(function(){
+  const el=document.getElementById('gmpCards');
+  if(!el) return;
+  const ALL=JSON.parse(el.textContent);
+  const KEY='dsh.gmp.cards';
+  const pos=document.getElementById('fPos'), fill=document.getElementById('fFill'),
+        stat=document.getElementById('fStat'), cat=document.getElementById('fCat'),
+        q=document.getElementById('fQ'), a=document.getElementById('fA'),
+        card=document.getElementById('fCard');
+  const onlyNew=document.getElementById('fOnlyNew');
+  let known={};
+  try{ known=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ known={}; }
+  let list=ALL.slice(), idx=0, shown=false;
+
+  function rebuild(){
+    list = onlyNew&&onlyNew.checked ? ALL.filter(c=>!known[c.id]) : ALL.slice();
+    if(list.length===0){ list=ALL.slice(); if(onlyNew) onlyNew.checked=false; }
+    idx=0; render();
+  }
+  function render(){
+    if(list.length===0) return;
+    const c=list[idx%list.length];
+    cat.textContent=c.cat;
+    q.textContent=c.q;
+    a.textContent=c.a;
+    a.hidden=true; shown=false;
+    pos.textContent=`${(idx%list.length)+1} / ${list.length}`;
+    const total=ALL.length, got=ALL.filter(x=>known[x.id]).length;
+    fill.style.width=(got/total*100).toFixed(0)+'%';
+    stat.textContent=`已掌握 ${got} / ${total}`;
+    card.classList.remove('flip');
+  }
+  function next(){ idx++; render(); }
+  document.getElementById('fShow').onclick=()=>{ a.hidden=false; shown=true; card.classList.add('flip'); };
+  document.getElementById('fKnow').onclick=()=>{ const c=list[idx%list.length]; known[c.id]=1; save(); next(); };
+  document.getElementById('fAgain').onclick=()=>{ const c=list[idx%list.length]; delete known[c.id]; save(); next(); };
+  if(onlyNew) onlyNew.onchange=rebuild;
+  const rs=document.getElementById('fReset');
+  if(rs) rs.onclick=()=>{ known={}; save(); rebuild(); };
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(known)); }catch(e){} }
+  render();
+})();
 
 (function(){
   const KEY='dsh.go.checklist';
@@ -593,6 +651,7 @@ def main():
     with_resume = "--with-resume" in sys.argv
     algo = load("algo.json")
     godoc = load("go.json")
+    cards = load("gmp-cards.json")
     resume = load("resume.json") if (with_resume and (DATA / "resume.json").exists()) else {"projects": []}
     levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
@@ -844,6 +903,10 @@ def main():
     page.append('<p class="hint">%s<br><span style="opacity:.75">%s</span></p>'
                 % (esc(gmeta.get("subtitle", "")), esc(gmeta.get("note", ""))))
 
+    if gmeta.get("demo"):
+        page.append('<p class="hint">配套可运行 demo：<a href="%s" target="_blank" rel="noopener">demos/gmp</a> —— %s</p>'
+                    % (esc(gmeta["demo"]), esc(gmeta.get("demo_note", ""))))
+
     page.append('<h2 class="sec">学习阶梯：到哪一步算学会了</h2>')
     page.append('<div class="ladder">')
     for i, lv in enumerate(godoc.get("levels", []), 1):
@@ -888,6 +951,29 @@ def main():
         page.append('<h3 class="subsec">高频追问 <span>点开看答题要点</span></h3>')
         for qa in t.get("followups", []):
             page.append('<details class="qa"><summary>%s</summary><p>%s</p></details>' % (esc(qa["q"]), esc(qa["a"])))
+
+    # 记忆卡（Anki 式）
+    clist = cards.get("cards", [])
+    page.append('<h2 class="sec">记忆卡 <span style="font-weight:400;font-size:13px;color:var(--muted)">'
+                '共 %d 张 · 点「会了」自动标记，进度存在本地</span></h2>' % len(clist))
+    page.append('<div class="flash">')
+    page.append('<div class="flash-top"><span id="fPos"></span>'
+                '<span class="fbar"><i id="fFill"></i></span><span id="fStat"></span></div>')
+    page.append('<div class="flash-card" id="fCard">'
+                '<div class="f-cat" id="fCat"></div>'
+                '<div class="f-q" id="fQ"></div>'
+                '<div class="f-a" id="fA"></div>'
+                '</div>')
+    page.append('<div class="flash-actions">'
+                '<button id="fShow" class="btn-primary">显示答案</button>'
+                '<button id="fAgain" class="btn-ghost">还没掌握</button>'
+                '<button id="fKnow" class="btn-ok">会了</button>'
+                '</div>')
+    page.append('<div class="flash-opts"><label class="toggle"><input id="fOnlyNew" type="checkbox"> 只看未掌握</label>'
+                '<button id="fReset" class="btn-link">重置进度</button></div>')
+    page.append('</div>')
+    page.append('<script id="gmpCards" type="application/json">%s</script>'
+                % json.dumps(clist, ensure_ascii=False).replace("</", "<\\/"))
 
     page.append('<h2 class="sec">后续主题路线</h2>')
     page.append('<div class="roadmap">')
