@@ -169,6 +169,46 @@ h2.sec:first-child{margin-top:0}
 .note-card h4{margin:0 0 6px;font-size:14px}
 .note-card p{margin:0;font-size:13.5px;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:12.5px;background:var(--card)}
+.notebook{display:grid;grid-template-columns:240px 1fr;gap:14px;align-items:start}
+@media (max-width:860px){.notebook{grid-template-columns:1fr}}
+.nb-list{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:8px;box-shadow:var(--shadow)}
+.nb-item{padding:9px 11px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nb-item:hover{background:var(--soft)}
+.nb-item.active{background:var(--soft);box-shadow:inset 2px 0 0 var(--brand)}
+.nb-t{font-size:13.5px;font-weight:560;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nb-tag{font-size:10px;padding:0 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);flex:none}
+.nb-tag.loc{color:var(--brand);border-color:var(--brand)}
+.nb-new{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:1px dashed var(--line);background:none;color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer}
+.nb-new:hover{border-color:var(--brand);color:var(--brand)}
+.nb-main{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px 20px;box-shadow:var(--shadow);min-height:420px}
+.nb-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.nb-title{flex:1;min-width:160px;border:0;background:none;font:inherit;font-size:16px;font-weight:650;color:var(--ink);padding:2px 0}
+.nb-title:focus{outline:none;border-bottom:1px dashed var(--brand)}
+.nb-actions{display:flex;gap:6px}
+.nb-actions button{padding:5px 11px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:12.5px;cursor:pointer}
+.nb-actions button:hover{border-color:var(--brand);color:var(--brand)}
+.nb-actions .nb-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.nb-actions .nb-danger{color:var(--t3)}
+.nb-text{width:100%;min-height:380px;border:1px solid var(--line);border-radius:9px;padding:12px 14px;
+  font:13.5px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg);color:var(--ink);resize:vertical}
+.nb-text:focus{outline:2px solid var(--brand);outline-offset:-1px}
+.md{font-size:14px;line-height:1.75}
+.md h1{font-size:22px;margin:4px 0 14px;letter-spacing:-.01em}
+.md h2{font-size:17px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.md h3{font-size:15px;margin:18px 0 8px}
+.md p{margin:8px 0}
+.md ul,.md ol{margin:8px 0;padding-left:22px}
+.md li{margin:3px 0}
+.md blockquote{margin:10px 0;padding:8px 14px;border-left:3px solid var(--brand);background:var(--soft);color:var(--muted);border-radius:0 8px 8px 0}
+.md code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.md-code{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+.md-code code{background:none;padding:0;font-size:12.5px;line-height:1.7}
+.md hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.md a{color:var(--brand)}
+.md-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.md-table th,.md-table td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+.md-table th{background:var(--soft);font-weight:650}
+.md-empty{color:var(--muted)}
 .flash{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
 .flash-top{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
 .fbar{flex:1;height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
@@ -302,12 +342,13 @@ table.rank td.dom{color:var(--muted);font-size:12.5px;line-height:1.5}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 """
 
-JS = """
+JS = r"""
 const tabs=[...document.querySelectorAll('.tabbar button')];
 const secs={list:document.getElementById('tab-list'),req:document.getElementById('tab-req')};
 const _rs=document.getElementById('tab-resume'); if(_rs) secs.resume=_rs;
 const _al=document.getElementById('tab-algo'); if(_al) secs.algo=_al;
 const _go=document.getElementById('tab-go'); if(_go) secs.go=_go;
+const _nb=document.getElementById('tab-notes'); if(_nb) secs.notes=_nb;
 function showTab(name,scroll){
   const b=tabs.find(x=>x.dataset.tab===name)||tabs[0];
   tabs.forEach(x=>x.classList.toggle('active',x===b));
@@ -319,7 +360,7 @@ tabs.forEach(b=>b.addEventListener('click',()=>{
   history.replaceState(null,'','#'+b.dataset.tab);
 }));
 const H=((location.hash||'').replace('#',''));
-showTab(['list','req','algo','go','resume'].includes(H)?H:'list',false);
+showTab(['list','req','algo','go','notes','resume'].includes(H)?H:'list',false);
 
 const q=document.getElementById('q');
 const goOnly=document.getElementById('goOnly');
@@ -447,6 +488,149 @@ document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
     b.textContent='已复制';setTimeout(()=>b.textContent='复制',1500);
   }).catch(()=>{b.textContent='复制失败';setTimeout(()=>b.textContent='复制',1500);});
 }));
+(function(){
+  const seedEl=document.getElementById('notesSeed');
+  if(!seedEl) return;
+  const SEED=JSON.parse(seedEl.textContent);
+  const KEY_C='dsh.notes.custom', KEY_O='dsh.notes.override';
+  let custom=[], over={};
+  try{ custom=JSON.parse(localStorage.getItem(KEY_C)||'[]'); }catch(e){}
+  try{ over=JSON.parse(localStorage.getItem(KEY_O)||'{}'); }catch(e){}
+  const listEl=document.getElementById('nbList'), titleEl=document.getElementById('nbTitle'),
+        viewEl=document.getElementById('nbView'), textEl=document.getElementById('nbText'),
+        btnEdit=document.getElementById('nbEdit'), btnSave=document.getElementById('nbSave'),
+        btnExp=document.getElementById('nbExport'), btnDel=document.getElementById('nbDel'),
+        btnNew=document.getElementById('nbNew');
+  let curId=null, editing=false;
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function inline(s){
+    s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+    s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    s=s.replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>');
+    s=s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    return s;
+  }
+  function md(src){
+    src=src.replace(/\r\n/g,'\n');
+    const codes=[];
+    src=src.replace(/```[a-zA-Z]*\n?([\s\S]*?)```/g,function(m,c){
+      codes.push('<pre class="md-code"><code>'+esc(c.replace(/\n$/,''))+'</code></pre>');
+      return '\u0001'+(codes.length-1)+'\u0001';
+    });
+    src=esc(src);
+    const lines=src.split('\n');
+    let html='',inUl=false,inOl=false,para=[];
+    function closeList(){ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }
+    function flush(){ if(para.length){ html+='<p>'+inline(para.join(' '))+'</p>'; para=[]; } }
+    for(let i=0;i<lines.length;i++){
+      const l=lines[i]; let m;
+      if(/^\u0001\d+\u0001$/.test(l.trim())){ flush(); closeList(); html+=codes[+l.trim().replace(/\u0001/g,'')]; continue; }
+      if(!l.trim()){ flush(); closeList(); continue; }
+      if(/^\|/.test(l.trim()) && lines[i+1] && /^\|[\s:|-]+\|?$/.test(lines[i+1].trim())){
+        flush(); closeList();
+        const head=l.trim().replace(/^\||\|$/g,'').split('|').map(function(x){return x.trim();});
+        i++;
+        const rows=[];
+        while(lines[i+1] && /^\|/.test(lines[i+1].trim())){
+          i++;
+          rows.push(lines[i].trim().replace(/^\||\|$/g,'').split('|').map(function(x){return x.trim();}));
+        }
+        html+='<table class="md-table"><thead><tr>'+head.map(function(h){return '<th>'+inline(h)+'</th>';}).join('')+'</tr></thead><tbody>'
+             +rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+inline(c)+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
+        continue;
+      }
+      if(m=l.match(/^(#{1,6})\s+(.*)$/)){ flush(); closeList(); const n=m[1].length; html+='<h'+n+'>'+inline(m[2])+'</h'+n+'>'; continue; }
+      if(/^---+$/.test(l.trim())){ flush(); closeList(); html+='<hr>'; continue; }
+      if(m=l.match(/^&gt;\s?(.*)$/)){ flush(); closeList(); html+='<blockquote>'+inline(m[1])+'</blockquote>'; continue; }
+      if(m=l.match(/^[-*]\s+(.*)$/)){ flush(); if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+inline(m[1])+'</li>'; continue; }
+      if(m=l.match(/^\d+\.\s+(.*)$/)){ flush(); if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+inline(m[1])+'</li>'; continue; }
+      para.push(l);
+    }
+    flush(); closeList();
+    return html || '<p class="md-empty">（空）</p>';
+  }
+
+  function all(){
+    return SEED.map(function(n){ return {id:n.id,title:n.title,body:over[n.id]!==undefined?over[n.id]:n.body,kind:'repo'}; }).concat(custom);
+  }
+  function find(id){ return all().filter(function(n){return n.id===id;})[0]; }
+  function saveC(){ try{ localStorage.setItem(KEY_C,JSON.stringify(custom)); }catch(e){} }
+  function saveO(){ try{ localStorage.setItem(KEY_O,JSON.stringify(over)); }catch(e){} }
+  function h1(body){ const l=body.split('\n').filter(function(x){return x.indexOf('# ')===0;})[0]; return l?l.slice(2).trim():''; }
+
+  function renderList(){
+    listEl.innerHTML=all().map(function(n){
+      const t=h1(n.body)||n.title;
+      const tag=n.kind==='repo'?(over[n.id]!==undefined?'已改':'内置'):'随手记';
+      return '<div class="nb-item'+(n.id===curId?' active':'')+'" data-id="'+n.id+'">'
+        +'<div class="nb-t">'+esc(t)+'</div>'
+        +'<span class="nb-tag '+(n.kind==='repo'?'repo':'loc')+'">'+tag+'</span></div>';
+    }).join('');
+    listEl.querySelectorAll('.nb-item').forEach(function(el){
+      el.onclick=function(){ curId=el.dataset.id; editing=false; render(); };
+    });
+  }
+  function render(){
+    const items=all();
+    if(!items.length){ viewEl.innerHTML='<p class="md-empty">还没有笔记</p>'; return; }
+    let n=curId?find(curId):null;
+    if(!n){ n=items[0]; }
+    curId=n.id;
+    titleEl.value=n.title;
+    if(!editing) viewEl.innerHTML=md(n.body);
+    viewEl.hidden=editing;
+    textEl.hidden=!editing;
+    if(editing) textEl.value=n.body;
+    btnEdit.textContent=editing?'预览':'编辑';
+    btnSave.hidden=!editing;
+    btnDel.hidden=(n.kind==='repo' && over[n.id]===undefined);
+    renderList();
+  }
+
+  btnEdit.onclick=function(){ editing=!editing; render(); };
+  btnSave.onclick=function(){
+    const n=find(curId); if(!n) return;
+    const body=textEl.value;
+    if(n.kind==='repo'){ over[n.id]=body; saveO(); }
+    else { const c=custom.filter(function(x){return x.id===curId;})[0]; if(c){ c.body=body; c.title=h1(body)||c.title; } saveC(); }
+    editing=false; viewEl.innerHTML=md(body); render();
+  };
+  btnExp.onclick=function(){
+    const n=find(curId); if(!n) return;
+    const body=editing?textEl.value:n.body;
+    const blob=new Blob([body],{type:'text/markdown;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=(h1(body)||n.title||'note').replace(/[\\/:*?"<>|]/g,'_')+'.md';
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  btnDel.onclick=function(){
+    const n=find(curId); if(!n) return;
+    if(n.kind==='repo'){ delete over[n.id]; saveO(); }
+    else { custom=custom.filter(function(x){return x.id!==curId;}); saveC(); curId=null; }
+    render();
+  };
+  btnNew.onclick=function(){
+    const id='loc-'+Date.now();
+    custom.unshift({id:id,title:'新笔记',body:'# 新笔记\n\n',kind:'local'});
+    saveC(); curId=id; editing=true; render();
+    textEl.focus();
+  };
+  titleEl.onchange=function(){
+    const n=find(curId); if(!n) return;
+    const body=editing?textEl.value:n.body;
+    const lines=body.split('\n');
+    let done=false;
+    for(let i=0;i<lines.length;i++){ if(lines[i].indexOf('# ')===0){ lines[i]='# '+titleEl.value; done=true; break; } }
+    if(!done) lines.unshift('# '+titleEl.value);
+    const nb=lines.join('\n');
+    if(n.kind==='repo'){ over[n.id]=nb; saveO(); }
+    else { const c=custom.filter(function(x){return x.id===curId;})[0]; if(c){ c.body=nb; c.title=titleEl.value; } saveC(); }
+    editing=false; viewEl.innerHTML=md(nb); render();
+  };
+  render();
+})();
 """
 
 
@@ -663,6 +847,17 @@ def main():
     algo = load("algo.json")
     godoc = load("go.json")
     cards = load("gmp-cards.json")
+    NOTES = []
+    ndir = ROOT / "notes"
+    if ndir.exists():
+        for f in sorted(ndir.glob("*.md")):
+            body = f.read_text(encoding="utf-8")
+            first = ""
+            for line in body.splitlines():
+                if line.startswith("# "):
+                    first = line[2:].strip()
+                    break
+            NOTES.append({"id": "repo-" + f.stem, "title": first or f.stem, "body": body, "kind": "repo"})
     resume = load("resume.json") if (with_resume and (DATA / "resume.json").exists()) else {"projects": []}
     levels = profile.get("levels", {})
     meta = jobs_doc.get("meta", {})
@@ -716,8 +911,9 @@ def main():
     page.append('<button data-tab="req">② 技能要求</button>')
     page.append('<button data-tab="algo">③ 算法专题</button>')
     page.append('<button data-tab="go">④ Go 深度</button>')
+    page.append('<button data-tab="notes">⑤ 记事本</button>')
     if resume.get("projects"):
-        page.append('<button data-tab="resume">⑤ 总简历能力池</button>')
+        page.append('<button data-tab="resume">⑥ 总简历能力池</button>')
     page.append("</div></div></nav><main>")
 
     # module 1
@@ -1007,6 +1203,31 @@ def main():
         page.append('<div class="rm"><span class="rm-s">%s</span><b>%s</b><p>%s</p></div>'
                     % (esc(r["status"]), esc(r["name"]), esc(r["why"])))
     page.append("</div>")
+    page.append("</div></section>")
+
+    # module 6 —— 记事本（公开可见，内置笔记只读，随手记存本地）
+    page.append('<section id="tab-notes" hidden><div class="wrap">')
+    page.append('<h2 class="sec">记事本</h2>')
+    page.append('<p class="hint">支持 Markdown 语法（标题 / 列表 / 表格 / 代码块 / 引用 / 链接）。'
+                '左侧「内置笔记」来自仓库 <code>notes/*.md</code>，只读；「随手记」保存在浏览器本地，'
+                '可导出为 .md 再提交进仓库。</p>')
+    page.append('<div class="notebook">')
+    page.append('<aside class="nb-list"><div id="nbList"></div>'
+                '<button id="nbNew" class="nb-new">+ 新建随手记</button></aside>')
+    page.append('<div class="nb-main">')
+    page.append('<div class="nb-head">'
+                '<input id="nbTitle" class="nb-title" placeholder="标题" spellcheck="false">'
+                '<div class="nb-actions">'
+                '<button id="nbEdit">编辑</button>'
+                '<button id="nbSave" class="nb-primary">保存</button>'
+                '<button id="nbExport">导出 .md</button>'
+                '<button id="nbDel" class="nb-danger">删除</button>'
+                '</div></div>')
+    page.append('<div id="nbView" class="md"></div>')
+    page.append('<textarea id="nbText" class="nb-text" spellcheck="false" hidden></textarea>')
+    page.append('</div></div>')
+    page.append('<script id="notesSeed" type="application/json">%s</script>'
+                % json.dumps(NOTES, ensure_ascii=False).replace("</", "<\\/"))
     page.append("</div></section>")
 
     # module 3 —— 总简历能力池（仅本地构建，不进公开页）
