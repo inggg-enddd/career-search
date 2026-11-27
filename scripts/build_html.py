@@ -220,6 +220,8 @@ details.qa p{margin:8px 0 0;font-size:13px;color:var(--muted);line-height:1.65}
 .rm b{display:block;margin:6px 0 3px;font-size:13.5px}
 .rm p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
 .subsec{margin:26px 0 10px;font-size:15px;font-weight:650}
+.algoh{margin-top:30px}
+.algoh span{font-weight:400;font-size:12.5px;color:var(--muted);margin-left:8px;font-variant-numeric:tabular-nums}
 .subsec span{font-weight:400;font-size:12.5px;color:var(--muted);margin-left:8px}
 table.algo{width:100%;border-collapse:collapse;font-size:13px}
 table.algo th{text-align:left;font-size:11.5px;letter-spacing:.02em;color:var(--muted);
@@ -349,22 +351,30 @@ apply();
 const aq=document.getElementById('aq');
 const acat=document.getElementById('acat');
 const ahot=document.getElementById('ahot');
-const arows=[...document.querySelectorAll('.aprob')];
 const acount=document.getElementById('acount');
+const asecs=[...document.querySelectorAll('.algocat')];
 function aapply(){
   const kw=(aq.value||'').trim().toLowerCase();
   const c=acat?acat.value:'全部';
   const onlyHot=ahot&&ahot.checked;
-  let n=0;
-  arows.forEach(el=>{
-    const okC = c==='全部' || el.dataset.tier===c;
-    const okK = !kw || (el.dataset.text||'').includes(kw);
-    const okH = !onlyHot || el.dataset.hot==='1';
-    const show = okC && okK && okH;
-    el.style.display = show?'':'none';
-    if(show) n++;
+  let n=0, total=0;
+  asecs.forEach(sec=>{
+    const cat=sec.dataset.cat;
+    const catOK = (c==='全部' || c===cat);
+    let vis=0;
+    sec.querySelectorAll('.aprob').forEach(el=>{
+      total++;
+      const okK = !kw || (el.dataset.text||'').includes(kw);
+      const okH = !onlyHot || el.dataset.hot==='1';
+      const show = catOK && okK && okH;
+      el.style.display = show?'':'none';
+      if(show){ vis++; n++; }
+    });
+    sec.style.display = vis ? '' : 'none';
+    const h=sec.previousElementSibling;
+    if(h && h.classList.contains('algoh')) h.style.display = vis ? '' : 'none';
   });
-  acount.textContent = `显示 ${n} / ${arows.length} 题`;
+  acount.textContent = `显示 ${n} / ${total} 题`;
 }
 if(aq){ aq.addEventListener('input',aapply); }
 if(acat){ acat.addEventListener('change',aapply); }
@@ -839,7 +849,27 @@ def main():
     cats = algo.get("cats", [])
 
     def heat_cell(h):
-        return '<span class="heat">%s</span>' % (h if h else "—") if h else '<span class="heat mute">—</span>'
+        return '<span class="heat">%s</span>' % h if h else '<span class="heat mute">—</span>'
+
+    def rows_for(items, cat_key):
+        out = []
+        for x in sorted(items, key=lambda y: (-y.get("heat", 0), int(y["no"]) if str(y["no"]).isdigit() else 0)):
+            no = x.get("no", "")
+            slug = x.get("slug")
+            num = ('<a href="https://leetcode.cn/problems/%s/" target="_blank" rel="noopener">%s</a>' % (slug, no)) if slug else no
+            d = x.get("diff", "")
+            dcls = {"E": "d-e", "M": "d-m", "H": "d-h"}.get(d, "d-x")
+            text = (str(no) + " " + x.get("title", "") + " " + x.get("point", "") + " " + cat_key).lower()
+            gh = x.get("gohint")
+            pt = esc(x.get("point"))
+            if gh:
+                pt += '<br><span class="gh">Go：%s</span>' % esc(gh)
+            out.append('<tr class="aprob" data-cat="%s" data-hot="%d" data-text="%s">'
+                       '<td class="c mono">%s</td><td class="ttl">%s</td>'
+                       '<td class="c"><span class="diff %s">%s</span></td><td class="c">%s</td><td class="pt">%s</td></tr>'
+                       % (esc(cat_key), 1 if x.get("heat") else 0, esc(text),
+                          num, esc(x.get("title")), dcls, esc(d), heat_cell(x.get("heat")), pt))
+        return "".join(out)
 
     page.append('<section id="tab-algo" hidden><div class="wrap">')
     page.append('<h2 class="sec">%s</h2>' % esc(ameta.get("title", "算法专题")))
@@ -854,31 +884,24 @@ def main():
     page.append('<label class="toggle"><input id="ahot" type="checkbox"> 只看有面经热度</label>')
     page.append('<span class="count" id="acount"></span></div>')
 
-    page.append('<div class="panel tight"><table class="algo"><thead><tr>'
-                '<th>分类</th><th class="c">题号</th><th>题目</th><th class="c">难度</th>'
-                '<th class="c">热度</th><th>考点</th></tr></thead><tbody>')
-    ci = {c: i for i, c in enumerate(cats)}
-    ordered = sorted(probs, key=lambda x: (ci.get(x.get("cat"), 99), -x.get("heat", 0), int(x["no"]) if x["no"].isdigit() else 0))
-    for x in ordered:
-        no = x.get("no", "")
-        slug = x.get("slug")
-        num = ('<a href="https://leetcode.cn/problems/%s/" target="_blank" rel="noopener">%s</a>' % (slug, no)) if slug else no
-        d = x.get("diff", "")
-        dcls = {"E": "d-e", "M": "d-m", "H": "d-h"}.get(d, "d-x")
-        text = (str(no) + " " + x.get("title", "") + " " + x.get("point", "") + " " + x.get("cat", "")).lower()
-        page.append('<tr class="aprob" data-tier="%s" data-hot="%d" data-text="%s">'
-                    '<td class="cat">%s</td><td class="c mono">%s</td><td class="ttl">%s</td>'
-                    '<td class="c"><span class="diff %s">%s</span></td><td class="c">%s</td><td class="pt">%s</td></tr>'
-                    % (esc(x.get("cat")), 1 if x.get("heat") else 0, esc(text),
-                       esc(x.get("cat")), num, esc(x.get("title")), dcls, esc(d), heat_cell(x.get("heat")), esc(x.get("point"))))
-    for x in backs:
-        d = x.get("diff", "—")
-        text = (x.get("title", "") + " " + x.get("point", "")).lower()
-        page.append('<tr class="aprob" data-tier="工程手撕" data-hot="1" data-text="%s">'
-                    '<td class="cat">工程手撕</td><td class="c mono">—</td><td class="ttl">%s</td>'
-                    '<td class="c"><span class="diff d-x">—</span></td><td class="c">%s</td><td class="pt">%s<br><span class="gh">Go：%s</span></td></tr>'
-                    % (esc(text), esc(x.get("title")), heat_cell(x.get("heat")), esc(x.get("point")), esc(x.get("gohint"))))
-    page.append("</tbody></table></div>")
+    # 分类按「总热度」排序
+    groups = []
+    for c in cats:
+        items = [x for x in probs if x.get("cat") == c]
+        if not items:
+            continue
+        total = sum(x.get("heat", 0) for x in items)
+        groups.append((total, total / len(items), c, items))
+    groups.append((sum(x.get("heat", 0) for x in backs), sum(x.get("heat", 0) for x in backs) / max(len(backs), 1), "工程手撕", backs))
+    groups.sort(key=lambda g: -g[0])
+
+    for total, avg, c, items in groups:
+        page.append('<h3 class="subsec algoh">%s <span>%d 题 · 总热度 %d · 均热度 %.0f</span></h3>' % (esc(c), len(items), total, avg))
+        page.append('<div class="panel tight algocat" data-cat="%s"><table class="algo"><thead><tr>'
+                    '<th class="c">题号</th><th>题目</th><th class="c">难度</th>'
+                    '<th class="c">热度</th><th>考点与易错点</th></tr></thead><tbody>' % esc(c))
+        page.append(rows_for(items, c))
+        page.append("</tbody></table></div>")
 
     page.append('<h2 class="sec">Go 手撕的 6 个坑</h2>')
     page.append('<div class="panel"><div class="layers">')

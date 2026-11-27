@@ -2,7 +2,7 @@
   "meta": {
     "title": "算法专题 · 热题 100 全量 + 工程手撕",
     "subtitle": "官方热题 100 按 17 个专题分类，另附 11 道后端工程手撕题",
-    "note": "热度为面经出现频次的相对值（0-100），仅对已有面经数据的高频题标注，其余显示「—」；不是命中概率。分类沿用官方专题结构。",
+    "note": "热度为面经出现频次的相对值（0-100），仅对已有面经数据的高频题标注，其余显示「—」，不代表命中概率。分类沿用官方专题结构，组内按热度排序。",
     "updated": "2026-11-26"
   },
   "cats": [
@@ -31,7 +31,7 @@
       "slug": "two-sum",
       "diff": "E",
       "cat": "哈希",
-      "point": "边遍历边查表，避免用同一元素两次；返回下标",
+      "point": "哈希表存「值→下标」，边遍历边查 target-n。必须先查再存，否则同一元素会被用两次；返回下标不是值。追问：数组有序时双指针可省空间。",
       "heat": 58
     },
     {
@@ -40,7 +40,7 @@
       "slug": "group-anagrams",
       "diff": "M",
       "cat": "哈希",
-      "point": "排序后作 key，或 26 位计数作 key",
+      "point": "把「同字母异位」映射成同一 key：排序后的字符串，或长度 26 的计数数组。排序 O(n·klogk)，计数 O(n·k)。追问：字符集很大时计数数组反而更省。",
       "heat": 30
     },
     {
@@ -49,7 +49,7 @@
       "slug": "longest-consecutive-sequence",
       "diff": "M",
       "cat": "哈希",
-      "point": "哈希集合 + 只从序列起点枚举，O(n)",
+      "point": "全部入哈希集合，只从「前一个数不存在」的位置向上延伸，保证每数只访问一次，总体 O(n)。不能对每个数都向两边扩展，否则退化成 O(n²)。",
       "heat": 35
     },
     {
@@ -58,7 +58,7 @@
       "slug": "move-zeroes",
       "diff": "E",
       "cat": "双指针",
-      "point": "快慢指针，非零前移后补零，保持相对顺序",
+      "point": "快慢指针：fast 扫非零，slow 负责落位，最后 slow 之后补零。要求保持相对顺序，所以不能用交换式的两端指针。",
       "heat": 30
     },
     {
@@ -67,7 +67,7 @@
       "slug": "container-with-most-water",
       "diff": "M",
       "cat": "双指针",
-      "point": "谁矮移谁；面积 = min(h) × 宽度",
+      "point": "左右指针，每次移动较矮的一侧——移动高的一侧面积不可能更大。面积 = min(h[l],h[r]) × (r-l)。",
       "heat": 32
     },
     {
@@ -76,7 +76,7 @@
       "slug": "3sum",
       "diff": "M",
       "cat": "双指针",
-      "point": "排序后双指针 + 两层去重",
+      "point": "排序后固定第一个数，其余两数双指针。三层去重（外层跳重复、内层跳重复），否则出重复三元组；固定数 >0 可提前退出。 追问：四数之和怎么改？→ 外面再套一层循环，每层各自去重；复杂度 O(n³)。",
       "heat": 85
     },
     {
@@ -85,7 +85,7 @@
       "slug": "trapping-rain-water",
       "diff": "H",
       "cat": "双指针",
-      "point": "左右最大值取小；双指针版空间 O(1)",
+      "point": "每格贡献 = min(左最大, 右最大) - 当前高度。双指针版维护左右最大值，空间 O(1)；单调栈版按「层」算。追问：为什么双指针可行——较矮侧的最大值已确定。",
       "heat": 56
     },
     {
@@ -94,7 +94,7 @@
       "slug": "longest-substring-without-repeating-characters",
       "diff": "M",
       "cat": "滑动窗口",
-      "point": "窗口收缩判定；right 不回退",
+      "point": "右指针扩张，遇重复则左指针跳到重复字符的下一位。map 记「字符→最近下标」，left = max(left, idx+1)，避免逐格回退。 追问：最多允许 K 次重复怎么办？→ 窗口内计数超过 K 才收缩左界。",
       "heat": 100
     },
     {
@@ -103,7 +103,7 @@
       "slug": "find-all-anagrams-in-a-string",
       "diff": "M",
       "cat": "滑动窗口",
-      "point": "固定窗口 + 26 字母计数种类比较",
+      "point": "固定长度窗口滑动，用长度 26 的计数数组比较窗口与目标是否同构；差异计数可把每次比较降到 O(1)。",
       "heat": 28
     },
     {
@@ -112,7 +112,7 @@
       "slug": "subarray-sum-equals-k",
       "diff": "M",
       "cat": "子串",
-      "point": "前缀和 + 哈希计数（和两数之和同构）",
+      "point": "前缀和 + 哈希计数：pre[j]-pre[i]=k ⟺ pre[i]=pre[j]-k。边遍历边查表，记得初始化 map[0]=1。与「两数之和」同构。",
       "heat": 32
     },
     {
@@ -121,7 +121,7 @@
       "slug": "sliding-window-maximum",
       "diff": "H",
       "cat": "子串",
-      "point": "单调双端队列，维护下标",
+      "point": "单调双端队列存下标，队头即当前窗口最大值；新元素入队前弹掉所有比它小的。O(n)，每个下标最多进出一次。",
       "heat": 35
     },
     {
@@ -130,7 +130,7 @@
       "slug": "minimum-window-substring",
       "diff": "H",
       "cat": "子串",
-      "point": "need/window 计数，valid 变量判断满足",
+      "point": "need/window 两张计数表 + valid 记录「已满足的字符种类数」，避免每次遍历 26 个字符比较。收缩条件 valid == len(need)。",
       "heat": 35
     },
     {
@@ -139,7 +139,7 @@
       "slug": "maximum-subarray",
       "diff": "M",
       "cat": "普通数组",
-      "point": "Kadane；cur/max 两个变量代替 dp 数组",
+      "point": "Kadane：cur = max(x, cur+x)，ans = max(ans, cur)。要返回区间需额外记起止下标；分治写法是加分项。 追问：要返回区间下标？→ 记录 cur 的起点，在 cur 被重置时更新答案区间。",
       "heat": 82
     },
     {
@@ -148,7 +148,7 @@
       "slug": "merge-intervals",
       "diff": "M",
       "cat": "普通数组",
-      "point": "按左端点排序后一次扫描",
+      "point": "按左端点排序后一次扫描，能合并的条件是 next.left <= cur.right。易错：结果切片 append 时复用底层数组导致覆盖。 追问：如果区间是流式到达且不保证有序？→ 先落盘排序，或用区间树做在线合并。",
       "heat": 80
     },
     {
@@ -157,7 +157,7 @@
       "slug": "rotate-array",
       "diff": "M",
       "cat": "普通数组",
-      "point": "三次反转，或环状替换 O(1) 空间",
+      "point": "三次反转：整体反转 → 前 k 个反转 → 后 n-k 个反转。k 先对 n 取模；环状替换空间 O(1) 但更易写错。",
       "heat": 30
     },
     {
@@ -166,7 +166,7 @@
       "slug": "product-of-array-except-self",
       "diff": "M",
       "cat": "普通数组",
-      "point": "前后缀乘积，原地复用输出数组",
+      "point": "前缀积 × 后缀积。可先把前缀积写进结果数组，再从右往左乘后缀积，空间 O(1)（不计输出）。不能用除法，因为有 0。",
       "heat": 28
     },
     {
@@ -175,7 +175,7 @@
       "slug": "first-missing-positive",
       "diff": "H",
       "cat": "普通数组",
-      "point": "原地标记（把 x 换到下标 x-1）；空间 O(1)",
+      "point": "答案必在 [1, n+1]。原地哈希：把值 x 换到下标 x-1，使 nums[i]==i+1；最后扫第一个不符合的位置。要求 O(1) 额外空间。",
       "heat": 25
     },
     {
@@ -184,7 +184,7 @@
       "slug": "set-matrix-zeroes",
       "diff": "M",
       "cat": "矩阵",
-      "point": "用首行首列当标记位，避免额外空间",
+      "point": "用首行/首列当标记位，省掉 O(mn) 额外空间；需要两个额外布尔记录「首行/首列本身是否为 0」。",
       "heat": 25
     },
     {
@@ -193,7 +193,7 @@
       "slug": "spiral-matrix",
       "diff": "M",
       "cat": "矩阵",
-      "point": "四条边界收缩，注意重复访问",
+      "point": "维护上下左右四条边界，每走完一条边就收缩并检查是否越界，防止重复访问。",
       "heat": 44
     },
     {
@@ -202,7 +202,7 @@
       "slug": "rotate-image",
       "diff": "M",
       "cat": "矩阵",
-      "point": "先转置再左右反转",
+      "point": "顺时针 90°：先沿主对角线转置，再左右翻转每一行。逆时针则转置后上下翻转。",
       "heat": 25
     },
     {
@@ -211,7 +211,7 @@
       "slug": "search-a-2d-matrix-ii",
       "diff": "M",
       "cat": "矩阵",
-      "point": "从右上角出发，比目标大往左，小往下",
+      "point": "从右上角出发：比目标大就左移，小就下移，O(m+n)。要能说明为什么不能从左下/右上以外的角出发。",
       "heat": 28
     },
     {
@@ -220,7 +220,7 @@
       "slug": "intersection-of-two-linked-lists",
       "diff": "E",
       "cat": "链表",
-      "point": "走完自己走对方，两轮必相遇",
+      "point": "双指针 A 走完走 B、B 走完走 A，两轮必在交点相遇（长度差被抵消）。无交点时同时为 nil，循环条件写 a != b。 追问：不允许拼接两条链表？→ 先各算长度，长的先走差值，再同步走。",
       "heat": 54
     },
     {
@@ -229,7 +229,7 @@
       "slug": "reverse-linked-list",
       "diff": "E",
       "cat": "链表",
-      "point": "迭代三指针；递归注意栈深度",
+      "point": "迭代三指针 prev/cur/next；递归版返回新头，注意 head.next.next=head 之后要把 head.next 置 nil。 追问：只用递归怎么写？→ 递归到尾部返回新头，回溯时把 next.next 指向自己。",
       "heat": 95
     },
     {
@@ -238,7 +238,7 @@
       "slug": "palindrome-linked-list",
       "diff": "E",
       "cat": "链表",
-      "point": "快慢找中点 + 反转后半 + 比较",
+      "point": "快慢指针找中点 → 反转后半 → 逐个比较。奇数长度要跳过中间节点；可追问「能否不修改原链表」。",
       "heat": 36
     },
     {
@@ -247,7 +247,7 @@
       "slug": "linked-list-cycle",
       "diff": "E",
       "cat": "链表",
-      "point": "快慢指针判环",
+      "point": "快慢指针，快走两步慢走一步，有环必相遇。循环条件 fast != nil && fast.Next != nil。",
       "heat": 38
     },
     {
@@ -256,7 +256,7 @@
       "slug": "linked-list-cycle-ii",
       "diff": "M",
       "cat": "链表",
-      "point": "相遇后从头与相遇点同步走找入口",
+      "point": "相遇后一个指针回 head，两者同速前进，再相遇处即入口。需能推导「从头到入口 = 从相遇点到入口」。",
       "heat": 40
     },
     {
@@ -265,7 +265,7 @@
       "slug": "merge-two-sorted-lists",
       "diff": "E",
       "cat": "链表",
-      "point": "哨兵节点简化头部分支",
+      "point": "用 dummy 哨兵统一处理头节点，尾插法推进。递归写法更短但占栈。 追问：能否不新建节点原地合并？→ 直接改 Next 指针，用 dummy 串起来。",
       "heat": 76
     },
     {
@@ -274,7 +274,7 @@
       "slug": "add-two-numbers",
       "diff": "M",
       "cat": "链表",
-      "point": "逐位相加 + 进位；注意最后进位",
+      "point": "逐位相加 + 进位，注意两链表长度不等、以及最后仍有进位要补一个节点。",
       "heat": 50
     },
     {
@@ -283,7 +283,7 @@
       "slug": "remove-nth-node-from-end-of-list",
       "diff": "M",
       "cat": "链表",
-      "point": "快指针先走 N，再同步；用 dummy 处理删头",
+      "point": "快指针先走 N 步再与慢指针同步，快到达尾部时慢指针在待删节点的前驱。用 dummy 处理删除头节点。",
       "heat": 40
     },
     {
@@ -292,7 +292,7 @@
       "slug": "swap-nodes-in-pairs",
       "diff": "M",
       "cat": "链表",
-      "point": "三指针或递归",
+      "point": "三指针或递归。迭代时每次交换后要把新头接回前驱的 Next。",
       "heat": 45
     },
     {
@@ -301,7 +301,7 @@
       "slug": "reverse-nodes-in-k-group",
       "diff": "H",
       "cat": "链表",
-      "point": "分组翻转 + 不足 K 保持；先统计长度",
+      "point": "先统计总长（避免每组探测是否满 K），不足 K 的保持原序；组内反转后要接回前驱与后继。 追问：如果 K 每次随机？→ 每组先探测剩余长度，不足 K 就停止。",
       "heat": 88
     },
     {
@@ -310,7 +310,7 @@
       "slug": "copy-list-with-random-pointer",
       "diff": "M",
       "cat": "链表",
-      "point": "哈希表映射新旧节点，或拼接拆分（省空间）",
+      "point": "哈希表存「原节点→新节点」，两轮遍历。进阶：拼接拆分（A→A'→B→B'）省掉哈希表，空间 O(1)。",
       "heat": 35
     },
     {
@@ -319,7 +319,7 @@
       "slug": "sort-list",
       "diff": "M",
       "cat": "链表",
-      "point": "归并排序：快慢找中点 + 合并",
+      "point": "归并排序：快慢找中点 → 断开 → 递归 → 合并。要求 O(1) 空间时用自底向上归并。",
       "heat": 45
     },
     {
@@ -328,7 +328,7 @@
       "slug": "merge-k-sorted-lists",
       "diff": "H",
       "cat": "链表",
-      "point": "小顶堆，或两两归并分治",
+      "point": "小顶堆存每个链表头，每次弹最小并补入它的下一个，O(Nlogk)。分治两两合并是另一条路。",
       "heat": 40
     },
     {
@@ -337,7 +337,7 @@
       "slug": "lru-cache",
       "diff": "M",
       "cat": "链表",
-      "point": "哈希 + 双向链表，get/put 都 O(1)",
+      "point": "哈希表 + 双向链表：哈希定位、链表定序。手写哨兵节点能省大量 nil 判断；面试更想看手写而非 container/list。 追问：并发场景怎么做？→ 分段锁或按 key 分片，多个 LRU 实例分摊锁竞争。",
       "heat": 98
     },
     {
@@ -346,7 +346,7 @@
       "slug": "binary-tree-inorder-traversal",
       "diff": "E",
       "cat": "二叉树",
-      "point": "递归 / 显式栈；Morris 是加分项",
+      "point": "递归 / 显式栈；Morris 遍历可做到 O(1) 空间（借叶子空右指针建线索），是加分项。",
       "heat": 36
     },
     {
@@ -355,7 +355,7 @@
       "slug": "maximum-depth-of-binary-tree",
       "diff": "E",
       "cat": "二叉树",
-      "point": "递归取左右最大 +1",
+      "point": "递归 max(left,right)+1，BFS 层数亦可。空树返回 0。",
       "heat": 34
     },
     {
@@ -364,7 +364,7 @@
       "slug": "invert-binary-tree",
       "diff": "E",
       "cat": "二叉树",
-      "point": "递归交换左右子树",
+      "point": "递归交换左右子树再递归；也可用队列层序交换。",
       "heat": 35
     },
     {
@@ -373,7 +373,7 @@
       "slug": "symmetric-tree",
       "diff": "E",
       "cat": "二叉树",
-      "point": "双指针镜像递归比较",
+      "point": "不是比左右子树，而是比「左的左 vs 右的右」和「左的右 vs 右的左」，用一对指针递归。",
       "heat": 30
     },
     {
@@ -382,7 +382,7 @@
       "slug": "diameter-of-binary-tree",
       "diff": "E",
       "cat": "二叉树",
-      "point": "后序求左右深度，答案为左右之和的最大值",
+      "point": "后序求每个节点左右深度，答案在「左深+右深」处更新，返回父节点的是较大深度。易错：直径不一定过根。",
       "heat": 30
     },
     {
@@ -391,7 +391,7 @@
       "slug": "binary-tree-level-order-traversal",
       "diff": "M",
       "cat": "二叉树",
-      "point": "先记 len(queue) 再按层处理",
+      "point": "先记 l := len(queue) 再处理本层，避免把下一层混进来。Go 里别写 for range queue——range 是副本迭代。 追问：要同时输出每层最大值？→ 层内遍历时聚合，别额外再扫一遍。",
       "heat": 78
     },
     {
@@ -400,7 +400,7 @@
       "slug": "convert-sorted-array-to-binary-search-tree",
       "diff": "E",
       "cat": "二叉树",
-      "point": "取中点递归，保证平衡",
+      "point": "每次取中点做根，递归左右区间，天然平衡。注意 mid 取法与区间开闭的一致性。",
       "heat": 25
     },
     {
@@ -409,7 +409,7 @@
       "slug": "validate-binary-search-tree",
       "diff": "M",
       "cat": "二叉树",
-      "point": "传上下界，不要只比父节点",
+      "point": "传上下界递归，不能只比较父子——反例是右子树的左节点小于根。中序遍历递增是等价判据。",
       "heat": 28
     },
     {
@@ -418,7 +418,7 @@
       "slug": "kth-smallest-element-in-a-bst",
       "diff": "M",
       "cat": "二叉树",
-      "point": "中序遍历计数",
+      "point": "中序遍历计数到第 k 个；进阶用子树 size 做 O(h) 查找（需额外维护 size）。",
       "heat": 25
     },
     {
@@ -427,7 +427,7 @@
       "slug": "binary-tree-right-side-view",
       "diff": "M",
       "cat": "二叉树",
-      "point": "层序取每层最后一个",
+      "point": "层序遍历取每层最后一个；DFS 版按「深度首次到达」记录。",
       "heat": 25
     },
     {
@@ -436,7 +436,7 @@
       "slug": "flatten-binary-tree-to-linked-list",
       "diff": "M",
       "cat": "二叉树",
-      "point": "先序前驱，或后序处理再拼接",
+      "point": "后序：先展开左右子树，再把左子树接到右边、原右子树接到左子树末尾。或找前驱做原地拼接。",
       "heat": 22
     },
     {
@@ -445,7 +445,7 @@
       "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
       "diff": "M",
       "cat": "二叉树",
-      "point": "哈希存中序下标，递归切分",
+      "point": "前序首个是根，在中序里定位根切分左右。用哈希存中序下标，避免每层线性查找。",
       "heat": 25
     },
     {
@@ -454,7 +454,7 @@
       "slug": "path-sum-iii",
       "diff": "M",
       "cat": "二叉树",
-      "point": "前缀和 + 回溯撤销（关键：进入/退出时增删）",
+      "point": "前缀和 + 回溯：进入节点时把当前前缀和入 map，退出时撤销。ans 累加 (cur-target) 的出现次数。",
       "heat": 22
     },
     {
@@ -463,7 +463,7 @@
       "slug": "lowest-common-ancestor-of-a-binary-tree",
       "diff": "M",
       "cat": "二叉树",
-      "point": "后序；左右各找到即当前为 LCA",
+      "point": "后序递归：左右各返回一个非空时当前即 LCA；否则返回非空的那个。",
       "heat": 48
     },
     {
@@ -472,7 +472,7 @@
       "slug": "binary-tree-maximum-path-sum",
       "diff": "H",
       "cat": "二叉树",
-      "point": "后序；贡献值取 max(0, ...)，答案在「拐点」更新",
+      "point": "后序：向父返回 max(0,左) 与 max(0,右) 的较大者 + 自身；答案在「左+右+自身」处更新。负数要截断为 0。",
       "heat": 35
     },
     {
@@ -481,7 +481,7 @@
       "slug": "number-of-islands",
       "diff": "M",
       "cat": "图论",
-      "point": "DFS/BFS 沉岛；大矩阵注意递归深度",
+      "point": "DFS/BFS 沉岛：访问过的陆地置 0。大矩阵注意递归深度（可改 BFS 或并查集）。 追问：矩阵是流式输入怎么办？→ 并查集增量合并，或分块处理。",
       "heat": 70
     },
     {
@@ -490,7 +490,7 @@
       "slug": "rotting-oranges",
       "diff": "M",
       "cat": "图论",
-      "point": "多源 BFS，按层计时",
+      "point": "多源 BFS：所有腐烂橘子同时入队，按层推进计时；最后检查是否还有新鲜橘子。",
       "heat": 28
     },
     {
@@ -499,7 +499,7 @@
       "slug": "course-schedule",
       "diff": "M",
       "cat": "图论",
-      "point": "拓扑排序（Kahn）或 DFS 判环",
+      "point": "拓扑排序（Kahn）：入度 0 入队，逐个出队并减邻居入度；出队数 < 节点数则有环。DFS 三色标记亦可。",
       "heat": 35
     },
     {
@@ -508,7 +508,7 @@
       "slug": "implement-trie-prefix-tree",
       "diff": "M",
       "cat": "图论",
-      "point": "多叉字典树；children 用 map 或 [26]*Node",
+      "point": "每节点是 children 映射 + isEnd 标记。用 map[byte]*Node 还是 [26]*Node 要能说清取舍（内存 vs 速度）。",
       "heat": 30
     },
     {
@@ -517,7 +517,7 @@
       "slug": "permutations",
       "diff": "M",
       "cat": "回溯",
-      "point": "used 数组；path 要 copy 后 append",
+      "point": "used 数组标记已选，递归到底收集。关键：收集时 copy(path)，否则所有结果指向同一底层数组。 追问：有重复元素时如何避免重复排列？→ 先排序，同层遇到相同元素跳过。",
       "heat": 68
     },
     {
@@ -526,7 +526,7 @@
       "slug": "subsets",
       "diff": "M",
       "cat": "回溯",
-      "point": "选/不选，或按起点枚举",
+      "point": "每个位置「选/不选」两分支，或按起点枚举避免重复。空集要包含。",
       "heat": 35
     },
     {
@@ -535,7 +535,7 @@
       "slug": "letter-combinations-of-a-phone-number",
       "diff": "M",
       "cat": "回溯",
-      "point": "映射表 + 索引递归",
+      "point": "数字→字母映射表 + 按索引递归，终止条件是索引到达末尾。",
       "heat": 30
     },
     {
@@ -544,7 +544,7 @@
       "slug": "combination-sum",
       "diff": "M",
       "cat": "回溯",
-      "point": "可重复选：递归时 start 不变；剪枝排序",
+      "point": "元素可重复选：递归时 start 不前进；排序后可剪枝（剩余 < 当前值就 break）。",
       "heat": 30
     },
     {
@@ -553,7 +553,7 @@
       "slug": "generate-parentheses",
       "diff": "M",
       "cat": "回溯",
-      "point": "左括号数 < n 可加左，右 < 左 可加右",
+      "point": "左括号数 < n 才能加左，右括号数 < 左括号数才能加右。这两个条件就是全部约束。",
       "heat": 28
     },
     {
@@ -562,7 +562,7 @@
       "slug": "word-search",
       "diff": "M",
       "cat": "回溯",
-      "point": "原地标记已访问再恢复",
+      "point": "DFS 四方向，访问前原地标记（改成特殊字符），回溯时恢复。",
       "heat": 25
     },
     {
@@ -571,7 +571,7 @@
       "slug": "palindrome-partitioning",
       "diff": "M",
       "cat": "回溯",
-      "point": "回溯 + 预判回文（DP 预处理更快）",
+      "point": "回溯枚举起点时判断子串是否回文；可用 DP 预处理回文表把判断降到 O(1)。",
       "heat": 20
     },
     {
@@ -580,7 +580,7 @@
       "slug": "n-queens",
       "diff": "H",
       "cat": "回溯",
-      "point": "列/主对角/副对角三个集合判冲突",
+      "point": "三个集合分别记录列、主对角（r-c）、副对角（r+c）的占用，逐行放置。",
       "heat": 20
     },
     {
@@ -589,7 +589,7 @@
       "slug": "search-insert-position",
       "diff": "E",
       "cat": "二分",
-      "point": "标准 lower_bound",
+      "point": "标准 lower_bound：找第一个 >= target 的位置，循环结束时 left 即答案。区间写 [left,right) 更不易错。",
       "heat": 25
     },
     {
@@ -598,7 +598,7 @@
       "slug": "search-a-2d-matrix",
       "diff": "M",
       "cat": "二分",
-      "point": "整体看作一维数组做二分",
+      "point": "把 m×n 矩阵看作长度 m*n 的有序一维数组，mid 映射回 (mid/n, mid%n)。",
       "heat": 22
     },
     {
@@ -607,7 +607,7 @@
       "slug": "find-first-and-last-position-of-element-in-sorted-array",
       "diff": "M",
       "cat": "二分",
-      "point": "两次二分：找左边界与右边界",
+      "point": "两次二分：第一个 >= target、第一个 > target，后者减一即右边界。目标不存在时返回 [-1,-1]。",
       "heat": 20
     },
     {
@@ -616,7 +616,7 @@
       "slug": "search-in-rotated-sorted-array",
       "diff": "M",
       "cat": "二分",
-      "point": "先判哪半有序，再判目标是否在有序半区",
+      "point": "先判断 mid 落在哪段有序区间，再判断 target 是否在该段内，据此收缩。关键是「必有一半有序」。",
       "heat": 32
     },
     {
@@ -625,7 +625,7 @@
       "slug": "find-minimum-in-rotated-sorted-array",
       "diff": "M",
       "cat": "二分",
-      "point": "与右端点比较决定收缩方向",
+      "point": "与右端点比：nums[mid] > nums[right] 说明最小值在右半，否则在左半。返回 nums[left]。 追问：允许重复元素（154）？→ 相等时 right--，最坏退化为 O(n)。",
       "heat": 64
     },
     {
@@ -634,7 +634,7 @@
       "slug": "median-of-two-sorted-arrays",
       "diff": "H",
       "cat": "二分",
-      "point": "对较短数组二分划分，O(log min(m,n))",
+      "point": "对较短数组二分划分线，使左半元素数为 (m+n+1)/2 且 maxLeft <= minRight。边界用 ±Inf 处理。",
       "heat": 30
     },
     {
@@ -643,7 +643,7 @@
       "slug": "valid-parentheses",
       "diff": "E",
       "cat": "栈",
-      "point": "左入栈右匹配；末尾栈空",
+      "point": "左括号入栈，右括号与栈顶匹配并弹出；最后栈必须为空。奇数长度直接 false。 追问：括号种类可扩展？→ 用 map 维护配对表，逻辑不变。",
       "heat": 66
     },
     {
@@ -652,7 +652,7 @@
       "slug": "min-stack",
       "diff": "M",
       "cat": "栈",
-      "point": "辅助栈同步存当前最小值",
+      "point": "辅助栈同步存「当前最小值」，push 时压 min(x, 辅助栈顶)。差值法省空间但要防溢出。",
       "heat": 30
     },
     {
@@ -661,7 +661,7 @@
       "slug": "decode-string",
       "diff": "M",
       "cat": "栈",
-      "point": "双栈：数字栈与字符串栈",
+      "point": "双栈（数字栈 + 字符串栈），遇 [ 压栈、遇 ] 弹出重复拼接。多位数要累积读取。",
       "heat": 28
     },
     {
@@ -670,7 +670,7 @@
       "slug": "daily-temperatures",
       "diff": "M",
       "cat": "栈",
-      "point": "单调栈存下标",
+      "point": "单调递减栈存下标，遇到更高温就结算栈顶答案。每下标只进出一次，O(n)。",
       "heat": 32
     },
     {
@@ -679,7 +679,7 @@
       "slug": "largest-rectangle-in-histogram",
       "diff": "H",
       "cat": "栈",
-      "point": "单调栈 + 哨兵，两端补 0 省边界判断",
+      "point": "单调递增栈，两端补 0 做哨兵；弹出时用「右界-左界-1」算宽。易错：栈空时左界是 -1。",
       "heat": 25
     },
     {
@@ -688,7 +688,7 @@
       "slug": "kth-largest-element-in-an-array",
       "diff": "M",
       "cat": "堆",
-      "point": "小顶堆 O(nlogk) 或快选期望 O(n)",
+      "point": "小顶堆维持 k 个元素，O(nlogk)；或快速选择期望 O(n)。面试常要求手写 siftDown 而非用 container/heap。 追问：数据是流式的？→ 只维护大小为 k 的小顶堆，O(nlogk)。",
       "heat": 92
     },
     {
@@ -697,7 +697,7 @@
       "slug": "top-k-frequent-elements",
       "diff": "M",
       "cat": "堆",
-      "point": "哈希计数 + 小顶堆，或桶排序",
+      "point": "哈希计数 + 小顶堆 O(nlogk)；或按频次分桶做到 O(n)。",
       "heat": 30
     },
     {
@@ -706,7 +706,7 @@
       "slug": "find-median-from-data-stream",
       "diff": "H",
       "cat": "堆",
-      "point": "大顶堆存小半，小顶堆存大半",
+      "point": "大顶堆存较小一半、小顶堆存较大一半，保持两堆大小差 ≤1。插入 O(logn)，取中位数 O(1)。",
       "heat": 20
     },
     {
@@ -715,7 +715,7 @@
       "slug": "best-time-to-buy-and-sell-stock",
       "diff": "E",
       "cat": "贪心",
-      "point": "维护历史最低价，一次遍历",
+      "point": "一次遍历维护历史最低价，每天算「今天卖」的收益取最大。空数组返回 0。 追问：允许多次交易（122）？→ 累加所有上涨区间，贪心。",
       "heat": 72
     },
     {
@@ -724,7 +724,7 @@
       "slug": "jump-game",
       "diff": "M",
       "cat": "贪心",
-      "point": "维护最远可达下标",
+      "point": "维护最远可达下标，遍历时若 i > 最远则不可达。不必关心具体跳几步。",
       "heat": 25
     },
     {
@@ -733,7 +733,7 @@
       "slug": "jump-game-ii",
       "diff": "M",
       "cat": "贪心",
-      "point": "按层扩展边界，边界内最远决定下一层",
+      "point": "按层 BFS 式贪心：在当前可达范围内找下一跳能到的最远位置，边界到达时步数 +1。",
       "heat": 20
     },
     {
@@ -742,7 +742,7 @@
       "slug": "partition-labels",
       "diff": "M",
       "cat": "贪心",
-      "point": "记录每个字母最后位置，边扫描边更新右界",
+      "point": "记录每个字母最后出现位置；扫描时维护当前区间右界，i == 右界时切分。",
       "heat": 18
     },
     {
@@ -751,7 +751,7 @@
       "slug": "climbing-stairs",
       "diff": "E",
       "cat": "动态规划",
-      "point": "斐波那契；滚动变量",
+      "point": "f(n)=f(n-1)+f(n-2)，滚动变量 O(1)。是理解状态转移的最小例子。",
       "heat": 35
     },
     {
@@ -760,7 +760,7 @@
       "slug": "pascals-triangle",
       "diff": "E",
       "cat": "动态规划",
-      "point": "逐层构造",
+      "point": "逐层构造，每层首尾为 1，中间为上一层相邻两数之和。",
       "heat": 22
     },
     {
@@ -769,7 +769,7 @@
       "slug": "house-robber",
       "diff": "M",
       "cat": "动态规划",
-      "point": "相邻不能选；滚动变量",
+      "point": "dp[i]=max(dp[i-1], dp[i-2]+nums[i])，滚动变量优化。环形版本拆成「不偷首」「不偷尾」两个子问题。 追问：首尾相邻成环（213）？→ 拆成「不偷首」「不偷尾」两解取最大。",
       "heat": 60
     },
     {
@@ -778,7 +778,7 @@
       "slug": "perfect-squares",
       "diff": "M",
       "cat": "动态规划",
-      "point": "完全背包，或 BFS 最短步数",
+      "point": "dp[i]=1+min(dp[i-j²])，完全背包。BFS 求最短步数是另一解。",
       "heat": 20
     },
     {
@@ -787,7 +787,7 @@
       "slug": "coin-change",
       "diff": "M",
       "cat": "动态规划",
-      "point": "完全背包求最小个数；初始化为无穷",
+      "point": "完全背包求最小个数：dp[i]=min(dp[i], dp[i-coin]+1)，初始化为无穷，dp[0]=0。",
       "heat": 32
     },
     {
@@ -796,7 +796,7 @@
       "slug": "word-break",
       "diff": "M",
       "cat": "动态规划",
-      "point": "dp[i] 表示前 i 位可拆；枚举切割点",
+      "point": "dp[i] 表示前 i 个字符可拆，枚举切割点 j 判断 dp[j] && word(s[j:i])。可加记忆化。",
       "heat": 30
     },
     {
@@ -805,7 +805,7 @@
       "slug": "longest-increasing-subsequence",
       "diff": "M",
       "cat": "动态规划",
-      "point": "O(n²) DP 或 贪心+二分 O(nlogn)",
+      "point": "O(n²) DP 易写；O(nlogn) 用「贪心 + 二分维护 tails」，注意 tails 不是真正的 LIS，只是长度对得上。",
       "heat": 35
     },
     {
@@ -814,7 +814,7 @@
       "slug": "maximum-product-subarray",
       "diff": "M",
       "cat": "动态规划",
-      "point": "同时维护最大与最小（负数会翻转）",
+      "point": "同时维护最大与最小（负数×负数会变大），遇到 0 把两个值都重置为 1。",
       "heat": 22
     },
     {
@@ -823,7 +823,7 @@
       "slug": "partition-equal-subset-sum",
       "diff": "M",
       "cat": "动态规划",
-      "point": "转 01 背包；一维数组倒序更新",
+      "point": "转 01 背包：能否凑出 sum/2。一维数组必须倒序遍历，否则同一元素被用多次；sum 为奇数直接 false。",
       "heat": 20
     },
     {
@@ -832,7 +832,7 @@
       "slug": "unique-paths",
       "diff": "M",
       "cat": "多维DP",
-      "point": "dp[i][j]=dp[i-1][j]+dp[i][j-1]，可压成一维",
+      "point": "dp[i][j]=dp[i-1][j]+dp[i][j-1]，可压成一维；组合数 C(m+n-2, m-1) 是另一解。",
       "heat": 28
     },
     {
@@ -841,7 +841,7 @@
       "slug": "minimum-path-sum",
       "diff": "M",
       "cat": "多维DP",
-      "point": "原地更新即可",
+      "point": "dp[i][j]=min(上,左)+grid[i][j]，可原地更新。",
       "heat": 22
     },
     {
@@ -850,7 +850,7 @@
       "slug": "longest-palindromic-substring",
       "diff": "M",
       "cat": "多维DP",
-      "point": "中心扩展更省空间；奇偶两种中心",
+      "point": "中心扩展：分别以单字符和双字符间隙为中心向两边扩，O(n²)。DP 版要按长度递增遍历。",
       "heat": 42
     },
     {
@@ -859,7 +859,7 @@
       "slug": "longest-common-subsequence",
       "diff": "M",
       "cat": "多维DP",
-      "point": "两串 DP，相等取左上+1，否则取上/左最大",
+      "point": "两串 DP：相等取左上+1，否则取上/左最大。注意与「最长公共子串」不同，子序列可不连续。",
       "heat": 20
     },
     {
@@ -868,7 +868,7 @@
       "slug": "edit-distance",
       "diff": "H",
       "cat": "多维DP",
-      "point": "插入/删除/替换三选一取最小",
+      "point": "dp[i][j] 表示 word1 前 i 转成 word2 前 j 的最少操作；插入/删除/替换三选最小。空串边界要初始化。",
       "heat": 25
     },
     {
@@ -877,7 +877,7 @@
       "slug": "single-number",
       "diff": "E",
       "cat": "技巧",
-      "point": "异或：a^a=0, a^0=a",
+      "point": "全部异或：a^a=0、a^0=a，成对消掉。追问：若有两个只出现一次的数，按最低位的 1 分组再异或。",
       "heat": 28
     },
     {
@@ -886,7 +886,7 @@
       "slug": "majority-element",
       "diff": "E",
       "cat": "技巧",
-      "point": "摩尔投票；或哈希计数",
+      "point": "摩尔投票：计数为 0 时换候选，相同 +1 不同 -1。前提是「一定存在」多数元素。",
       "heat": 25
     },
     {
@@ -895,7 +895,7 @@
       "slug": "sort-colors",
       "diff": "M",
       "cat": "技巧",
-      "point": "三指针 / 荷兰国旗问题",
+      "point": "荷兰国旗三指针：p0 指 0 区右界、p2 指 2 区左界、i 扫描。注意与 p2 交换后 i 不能前进。",
       "heat": 22
     },
     {
@@ -904,7 +904,7 @@
       "slug": "next-permutation",
       "diff": "M",
       "cat": "技巧",
-      "point": "从右找升序对 → 找较大者交换 → 反转后缀",
+      "point": "从右找第一对升序 (i,i+1) → 在右边找第一个大于 nums[i] 的数交换 → 反转 i+1 到末尾。已最大则整体反转。",
       "heat": 18
     },
     {
@@ -913,7 +913,7 @@
       "slug": "find-the-duplicate-number",
       "diff": "M",
       "cat": "技巧",
-      "point": "环形链表入口（快慢指针），不修改数组",
+      "point": "把数组当「i → nums[i]」的链表，重复数就是环入口，用快慢指针找。不修改数组、O(1) 空间。",
       "heat": 20
     }
   ],
